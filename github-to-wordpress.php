@@ -9,8 +9,6 @@ Version: 1.0
 
 define( 'G2W_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
 
-require __DIR__ . '/vendor/autoload.php';
-
 final class Github_To_WordPress{
 
     function __construct(){
@@ -21,8 +19,11 @@ final class Github_To_WordPress{
 
     function includes(){
 
-        require_once( G2W_PATH . 'includes/class-g2w.php' );
-        require_once( G2W_PATH . 'includes/class-parsedown.php' );
+        require __DIR__ . '/vendor/autoload.php';
+
+        require_once( G2W_PATH . 'includes/g2w.php' );
+        require_once( G2W_PATH . 'includes/parsedown.php' );
+
         require_once( G2W_PATH . 'admin/admin.php' );
 
     }

@@ -16,7 +16,7 @@ class G2W{
 
     public $default_post_meta = array(
         'sha' => '',
-        'git_url' => ''
+        'github_url' => ''
     );
 
     public function __construct( $user, $repo, $post_type ){
@@ -64,16 +64,15 @@ class G2W{
 
     public function get_post_meta( $post_id ){
 
-        $meta_vals = get_post_metadata( $post_id, '', true );
-        $default_vals = $this->default_post_meta;
+        $current_meta = get_post_meta( $post_id, '', true );
         $metadata = array();
 
-        if( !is_array( $meta_vals ) ){
-            return $default_vals;
+        if( !is_array( $current_meta ) ){
+            return $this->default_post_meta;
         }
 
-        foreach( $default_vals as $key => $val ){
-            $metadata[ $key ] = array_key_exists( $key, $meta_vals ) ? $meta_vals[$key][0] : $val;
+        foreach( $this->default_post_meta as $key => $default_val ){
+            $metadata[ $key ] = array_key_exists( $key, $current_meta ) ? $current_meta[$key][0] : $default_val;
         }
 
         return $metadata;
@@ -90,6 +89,10 @@ class G2W{
             array_pop( $file_slug );
             $file_slug = implode( '', $file_slug );
             $is_markdown = substr( $full_file_name, -3 ) == '.md';
+
+            if( !$is_markdown ){
+                return $structure;
+            }
 
             $structure[ $file_slug ] = array(
                 'type' => 'file',
@@ -164,37 +167,91 @@ class G2W{
 
     }
 
-    public function get_item_content( $raw_url ){
-
-        $content = $this->get( $raw_url );
+    public function get_item_content( $item_props ){
+        do_log('in item content');
+        do_log( $item_props );
+        $content = $this->get( $item_props[ 'raw_url' ] );
         if( !$content ){
             do_log( 'Failed to get item content' );
             return false;
         }
 
-        return $this->parsedown( $raw_url );
+        return $this->parsedown->text( $content );
 
     }
 
     public function create_post( $post_id, $item_slug, $item_props, $parent ){
 
-        do_log($post_id);
-        do_log($item_slug);
-        do_log($item_props);
-        do_log($parent);
+        do_log( '--------' );
+        do_log( 'Creating post ' . $post_id );
+        do_log( $item_slug );
+        do_log( $item_props );
+        do_log( $parent );
+        
+        // $newp = random_int( 2000, 3000 );
+        // do_log( 'created post - '  . $newp );
+        // do_log( '--------' );
+        // return $newp;
 
-        $post_array = array(
+        // If post exists, check if it has changed and proceed further
+        if( $post_id ){
+
+            $post_meta = $this->get_post_meta( $post_id );
+
+            if( $post_meta[ 'sha' ] == $item_props[ 'sha' ] ){
+                do_log( 'Post is unchanged' );
+                return $post_id;
+            }
+
+        }
+        
+        // Check if item props exist, in case of dir posts
+        if( $item_props ){
+            $item_content = $this->get_item_content( $item_props );
+
+            // Some error in getting the item content
+            if( !$item_content ){
+                do_log( 'Cannot retrieve post content, skipping this' );
+                return false;
+            }
+
+            $front_matter = $item_content[ 'front_matter' ];
+            $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
+            $content = $item_content[ 'html' ];
+            $sha = $item_props[ 'sha' ];
+            $github_url = $item_props[ 'github_url' ];
+
+        }else{
+            $post_title = $item_slug;
+            $content = '';
+            $sha = '';
+            $github_url = '';
+        }
+
+        $post_details = array(
             'ID' => $post_id,
-            'post_title' => $o_name,
+            'post_title' => $post_title,
             'post_name' => $item_slug,
             'post_content' => $content,
             'post_type' => $this->post_type,
             'post_status' => 'publish',
+            'post_parent' => $parent,
             'meta_input' => array(
-                'sha' => $status,
-                'git_url' => $disable_admin
+                'sha' => $sha,
+                'github_url' => $github_url
             )
         );
+
+        $new_post_id = wp_insert_post( $post_details );
+
+        if( is_wp_error( $new_post_id ) ){
+            do_log( 'Failed to insert post' );
+            return false;
+        }else{
+            do_log('created post - ' . $new_post_id);
+            do_log( '--------' );
+            return $new_post_id;
+        }
 
     }
 
@@ -224,7 +281,10 @@ class G2W{
 
                 if( array_key_exists( $item_slug, $existing_posts ) ){
                     $directory_post = $existing_posts[ $item_slug ][ 'id' ];
-                    $this->create_post( $directory_post, $item_slug, $item_props, $parent );
+
+                    $index_props = array_key_exists( 'index', $item_props[ 'items' ] ) ? $item_props[ 'items' ][ 'index' ] : false;
+                    $this->create_post( $directory_post, $item_slug, $index_props, $parent );
+
                 }else{
                     
                     // If index posts exists for the directory

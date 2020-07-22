@@ -21,6 +21,11 @@ class G2W_Admin{
     
         $c->create_posts( $c->repo_structure, 0 );
 
+        // $out = $c->get_item_content('https://raw.githubusercontent.com/vaakash/test/master/dir2/withfm.md');
+        // print_r($out['front_matter']);
+        // print_r($out['html']);
+
+
     }
 
 }
