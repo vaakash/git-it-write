@@ -26,6 +26,8 @@ class G2W{
         $this->post_type = $post_type;
         $this->parsedown = new G2W_Parsedown();
 
+        $this->parsedown->uploaded_images = get_option( 'g2w_uploaded_images', array() );
+
     }
 
     public function get( $url ){
@@ -89,10 +91,6 @@ class G2W{
             array_pop( $file_slug );
             $file_slug = implode( '', $file_slug );
             $is_markdown = substr( $full_file_name, -3 ) == '.md';
-
-            if( !$is_markdown ){
-                return $structure;
-            }
 
             $structure[ $file_slug ] = array(
                 'type' => 'file',
@@ -266,6 +264,7 @@ class G2W{
             if( $item_props['type'] == 'file' ){
 
                 if( $item_slug == 'index' ){
+                    do_log( 'Skipping separate post for index' );
                     continue;
                 }
 
@@ -276,6 +275,11 @@ class G2W{
             }
 
             if( $item_props[ 'type' ] == 'directory' ){
+
+                if( $item_slug == '_images' ){
+                    do_log( 'Skipping post for _images directory' );
+                    continue;
+                }
 
                 $directory_post = false;
 
@@ -302,6 +306,54 @@ class G2W{
             }
 
         }
+
+    }
+
+    public function upload_images(){
+
+        $uploaded_images = get_option( 'g2w_uploaded_images', array() );
+
+        if( !isset( $this->repo_structure[ '_images' ] ) || $this->repo_structure[ '_images' ][ 'type' ] != 'directory' ){
+            do_log( 'No images directory in repository. Exiting' );
+            return array();
+        }
+
+        $images_dir = $this->repo_structure[ '_images' ];
+        $images = $images_dir[ 'items' ];
+
+        foreach( $images as $image_slug => $image_props ){
+            do_log( 'Starting image ' . $image_slug );
+            if( array_key_exists( $image_slug, $uploaded_images ) ){
+                do_log( $image_slug . ' already uploaded' );
+                continue;
+            }
+
+            do_log( 'Uploading image ' . $image_slug );
+            do_log( $image_props );
+
+            $uploaded_image_id = media_sideload_image( $image_props[ 'raw_url' ], 0, null, 'id' );
+            $uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
+
+            // Check if image is uploaded correctly and 
+            if( !empty( $uploaded_image_url ) ){
+                do_log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
+                $uploaded_images[ $image_slug ] = array(
+                    'url' => $uploaded_image_url,
+                    'id' => $uploaded_image_id
+                );
+                if( !update_option( 'g2w_uploaded_images', $uploaded_images ) ){
+                    do_log( 'Updated uploaded images cache' );
+                }
+            }else{
+                do_log( 'Image upload failed for some reason' );
+            }
+
+        }
+
+        // Update the parsedown uploaded images array
+        $this->parsedown->uploaded_images = $uploaded_images;
+
+        return $uploaded_images;
 
     }
 
