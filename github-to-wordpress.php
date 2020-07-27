@@ -7,17 +7,19 @@ Author: Aakash Chakravarthy
 Version: 1.0
 */
 
+define( 'G2W_VERSION', '1.0' );
 define( 'G2W_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
+define( 'G2W_ADMIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) . 'admin' ) );
 
 final class Github_To_WordPress{
 
-    function __construct(){
+    public static function init(){
         
-        $this->includes();
+        self::includes();
 
     }
 
-    function includes(){
+    public static function includes(){
 
         require __DIR__ . '/vendor/autoload.php';
 
@@ -28,8 +30,30 @@ final class Github_To_WordPress{
 
     }
 
+    public static function default_config(){
+        return array(
+            'username' => '',
+            'repository' => '',
+            'folder' => '/'
+        );
+    }
+
+    public static function all_repositories(){
+
+        $repos_raw = get_option( 'g2w_repositories', array( array(), array('username' => 'vaakash'), array()) );
+        $repos = array();
+        $default_config = self::default_config();
+
+        foreach( $repos_raw as $id => $config ){
+            array_push( $repos, wp_parse_args( $config, $default_config ) );
+        }
+
+        return $repos;
+
+    }
+
 }
 
-new Github_To_WordPress();
+Github_To_WordPress::init();
 
 ?>
