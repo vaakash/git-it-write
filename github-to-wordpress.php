@@ -23,7 +23,10 @@ final class Github_To_WordPress{
 
         require __DIR__ . '/vendor/autoload.php';
 
-        require_once( G2W_PATH . 'includes/g2w.php' );
+        require_once( G2W_PATH . 'includes/utilities.php' );
+        require_once( G2W_PATH . 'includes/repository.php' );
+        require_once( G2W_PATH . 'includes/publisher.php' );
+        require_once( G2W_PATH . 'includes/publish-handler.php' );
         require_once( G2W_PATH . 'includes/parsedown.php' );
 
         require_once( G2W_PATH . 'admin/admin.php' );
@@ -34,7 +37,9 @@ final class Github_To_WordPress{
         return array(
             'username' => '',
             'repository' => '',
-            'folder' => '/'
+            'folder' => '/',
+            'post_type' => 'doc',
+            'last_publish' => 0
         );
     }
 

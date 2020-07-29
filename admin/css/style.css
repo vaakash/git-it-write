@@ -15,3 +15,16 @@
     max-width: 500px;
     margin-bottom: 15px;
 }
+
+.pull_post_log {
+    font-family: monospace;
+    background: #000;
+    color: #fff;
+}
+.pull_post_log > p {
+    margin: 0;
+    padding: 5px 10px;
+}
+.pull_post_log > p:hover{
+    background: #016087;
+}

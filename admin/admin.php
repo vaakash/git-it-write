@@ -100,6 +100,8 @@ class G2W_Admin{
             echo '<div>Repository: ' . $config[ 'repository' ] . '</div>';
             echo '<div>Folder to publish from: ' . $config[ 'folder' ] . '</div>';
 
+            echo '<div>Last publish on: ' . $config[ 'last_publish' ] . '</div>';
+
             echo '<footer>';
             echo '<a href="' . self::link( 'edit', $id ) . '">Edit</a> | ';
             echo '<a href="' . self::link( 'pull', $id, array( '_wpnonce' => wp_create_nonce( 'g2w_pull_nonce' ) ) ) . '">Pull posts</a> | ';
@@ -132,14 +134,15 @@ class G2W_Admin{
         if( $action == 'edit' ){
 
             if( !isset( $g[ 'id' ] ) || empty( $g[ 'id' ] ) ){
-                echo '<p>Invalid ID provided to edit settings</p>';
+                self::print_notice( 'Invalid ID provided to edit settings', 'error' );
                 return;
             }
 
             $id = $g[ 'id' ];
 
             if( !isset( $all_repos[ $id ] ) ){
-                echo '<p>Unable to find repository settings</p>';
+                self::print_notice( 'Unable to find repository settings', 'error' );
+                return;
             }
 
             $values = $all_repos[ $id ];
@@ -155,17 +158,22 @@ class G2W_Admin{
 
         echo '<tr>';
             echo '<td>Username</td>';
-            echo '<td><input type="text" class="widefat" name="username" value="' . $values[ 'username' ] . '" /></td>';
+            echo '<td><input type="text" class="widefat" name="g2w_username" value="' . $values[ 'username' ] . '" /></td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Repository</td>';
-            echo '<td><input type="text" class="widefat" name="repository" value="' . $values[ 'repository' ] . '" /></td>';
+            echo '<td><input type="text" class="widefat" name="g2w_repository" value="' . $values[ 'repository' ] . '" /></td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Folder to publish from</td>';
-            echo '<td><input type="text" class="widefat" name="folder" value="' . $values[ 'folder' ] . '" /></td>';
+            echo '<td><input type="text" class="widefat" name="g2w_folder" value="' . $values[ 'folder' ] . '" /></td>';
+        echo '</tr>';
+
+        echo '<tr>';
+            echo '<td>Post type to publish to</td>';
+            echo '<td><input type="text" class="widefat" name="g2w_post_type" value="' . $values[ 'post_type' ] . '" /></td>';
         echo '</tr>';
 
         echo '</tbody>';
@@ -217,7 +225,13 @@ class G2W_Admin{
             return;
         }
 
-        echo 'Pulling';
+        echo '<h2>Pulling posts from Github</h2>';
+
+        define( 'G2W_ON_GUI', true );
+
+        echo '<div class="pull_post_log">';
+        G2W_Publish_Handler::publish_by_id( $g[ 'id' ] );
+        echo '</div>';
 
     }
 
@@ -232,7 +246,8 @@ class G2W_Admin{
             $is_new = false;
 
             foreach( $defaults as $field => $default ){
-                $values[ $field ] = isset( $p[ $field ] ) ? sanitize_text_field( $p[ $field ] ) : $default;
+                $form_field = 'g2w_' . $field;
+                $values[ $field ] = isset( $p[ $form_field ] ) ? sanitize_text_field( $p[ $form_field ] ) : $default;
             }
 
             if( !isset( $p[ 'g2w_id' ] ) || empty( $p[ 'g2w_id' ] ) || !$p[ 'g2w_id' ] ){ // If no ID, then new item

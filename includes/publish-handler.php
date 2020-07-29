@@ -1,0 +1,79 @@
+<?php
+
+class G2W_Publish_Handler{
+
+    public static $repo_obj_cache = array();
+
+    public static function publish_by_id( $repo_id ){
+
+        $all_repos = Github_To_WordPress::all_repositories();
+
+        if( !isset( $all_repos[ $repo_id ] ) ){
+            return false;
+        }
+
+        G2W_Utils::log( '********** Publishing posts by repository config ID **********' );
+        G2W_Utils::log( 'Working with repository config ID ' . $repo_id );
+
+        $repo_config = $all_repos[ $repo_id ];
+        $username = $repo_config[ 'username' ];
+        $repo_name = $repo_config[ 'repository' ];
+        $post_type = $repo_config[ 'post_type' ];
+        $folder = $repo_config[ 'folder' ];
+        $repository = false;
+
+        // Cache the repository class object
+        if( array_key_exists( $username, self::$repo_obj_cache ) && array_key_exists( $repo_name, self::$repo_obj_cache[ $username ] ) ){
+            $repository = self::$repo_obj_cache[ $username ][ $repo_name ];
+        }else{
+            G2W_Utils::log( 'Creating repository object' );
+            $repository = new G2W_Repository( $username, $repo_name );
+            self::$repo_obj_cache[ $username ][ $repo_name ] = $repository;
+        }
+
+        $publisher = new G2W_Publisher( $repository, $post_type, $folder );
+        $result = $publisher->publish();
+
+        $all_repos[ $repo_id ][ 'last_publish' ] = time();
+        update_option( 'g2w_repositories', $all_repos );
+
+        G2W_Utils::log( '********** END **********' );
+
+        return $result;
+
+    }
+
+    public static function publish_by_repo_full_name( $full_name ){
+
+        G2W_Utils::log( '********** Publishing posts by repository full name **********' );
+
+        $name_split = explode( '/', $full_name );
+        if( count( $name_split ) != 2 ){
+            return false;
+        }
+
+        $all_results = array();
+        $username = $name_split[0];
+        $repo_name = $name_split[1];
+
+        $all_repos = Github_To_WordPress::all_repositories();
+
+        foreach( $all_repos as $id => $repo ){
+            if( $id == 0 ) continue;
+
+            if( $repo[ 'username' ] == $username && $repo[ 'repository' ] == $repo_name ){
+                G2W_Utils::log( 'There is a repo configured for this' );
+                $result = self::publish_by_id( $id );
+                array_push( $all_results, $result );
+            }
+        }
+
+        G2W_Utils::log( '********** END **********' );
+
+        return $all_results;
+
+    }
+
+}
+
+?>
