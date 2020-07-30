@@ -58,19 +58,25 @@ class G2W_Repository{
         if( count( $path_split ) == 1 ){
 
             $full_file_name = $path_split[0];
+            $extension = '';
 
+            // Remove the file extension
             $file_slug = explode( '.', $full_file_name );
-            array_pop( $file_slug );
-            $file_slug = implode( '', $file_slug );
-            $is_markdown = substr( $full_file_name, -3 ) == '.md';
+            if( count( $file_slug ) == 2 ){
+                $extension = array_pop( $file_slug );
+                $file_slug = implode( '', $file_slug );
+            }else{
+                $file_slug = $file_slug[0];
+            }
 
             $structure[ $file_slug ] = array(
                 'type' => 'file',
                 'raw_url' => $this->raw_url( $item->path ),
                 'github_url' => $this->github_url( $item->path ),
                 'sha' => $item->sha,
-                'markdown' => $is_markdown
+                'file_type' => strtolower( $extension )
             );
+
             return $structure;
 
         }else{

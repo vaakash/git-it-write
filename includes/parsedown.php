@@ -9,6 +9,10 @@ class G2W_Parsedown extends Parsedown{
         'order' => ''
     );
 
+    public $allowed_file_types = array(
+        'md', 'html', 'txt'
+    );
+
     public $uploaded_images = array();
 
     public function text( $text ){
@@ -54,8 +58,8 @@ class G2W_Parsedown extends Parsedown{
         }
 
         // #2 - Remove .md file extension in relative URLs
-        if( in_array( $first_character, array( '.', '/', '\\' ) ) && substr( $href, -3 ) == '.md' ){
-            $href = substr( $href, 0, -3 );
+        if( in_array( $first_character, array( '.', '/' ) ) ){
+            $href = G2W_Utils::remove_extension_relative_url( $href, $this->allowed_file_types );
         }
 
         $link_data[ 'element' ][ 'attributes' ][ 'href' ] = $prefix . $href;

@@ -27,6 +27,10 @@ class G2W_Publisher{
         'github_url' => ''
     );
 
+    public $allowed_file_types = array(
+        'md', 'html', 'txt'
+    );
+
     public function __construct( $repository, $post_type, $folder ){
 
         $this->repository = $repository;
@@ -157,10 +161,21 @@ class G2W_Publisher{
 
             G2W_Utils::log( 'At repository item - ' . $item_slug);
 
-            if( $item_props['type'] == 'file' ){
+            $first_character = substr( $item_slug, 0, 1 );
+            if( in_array( $first_character, array( '_', '.' ) ) ){
+                G2W_Utils::log( 'Items starting with _ . are skipped for publishing' );
+                continue;
+            }
+
+            if( $item_props[ 'type' ] == 'file' ){
 
                 if( $item_slug == 'index' ){
                     G2W_Utils::log( 'Skipping separate post for index' );
+                    continue;
+                }
+
+                if( !in_array( $item_props[ 'file_type' ], $this->allowed_file_types ) ){
+                    G2W_Utils::log( 'Skipping file as it is not an allowed file type' );
                     continue;
                 }
 
@@ -171,11 +186,6 @@ class G2W_Publisher{
             }
 
             if( $item_props[ 'type' ] == 'directory' ){
-
-                if( $item_slug == '_images' ){
-                    G2W_Utils::log( 'Skipping post for _images directory' );
-                    continue;
-                }
 
                 $directory_post = false;
 
@@ -262,14 +272,15 @@ class G2W_Publisher{
     public function publish(){
 
         $repo_structure = $this->repository->structure;
+        $folder = trim( $this->folder );
 
-        if( $this->folder != '/' ){
-            if( array_key_exists( $this->folder, $repo_structure ) ){
-                $repo_structure = $repo_structure[ $this->folder ][ 'items' ];
+        if( $folder != '/' || !empty( $folder ) ){
+            if( array_key_exists( $folder, $repo_structure ) ){
+                $repo_structure = $repo_structure[ $folder ][ 'items' ];
             }else{
                 return array(
                     'result' => 0,
-                    'message' => sprintf( 'No folder %s exists in the repository', $this->folder ),
+                    'message' => sprintf( 'No folder %s exists in the repository', $folder ),
                     'stats' => $this->stats
                 );
             }
@@ -282,6 +293,7 @@ class G2W_Publisher{
         G2W_Utils::log( '++++++++++ Done ++++++++++' );
 
         G2W_Utils::log( '++++++++++ Publishing posts ++++++++++' );
+        G2W_Utils::log( 'Allowed file types - ' . implode( ', ', $this->allowed_file_types ) );
         $this->create_posts( $repo_structure, 0 );
         G2W_Utils::log( '++++++++++ Done ++++++++++' );
 
