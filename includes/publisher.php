@@ -31,7 +31,7 @@ class G2W_Publisher{
         'md', 'html', 'txt'
     );
 
-    public function __construct( $repository, $post_type, $folder ){
+    public function __construct( G2W_Repository $repository, $post_type, $folder ){
 
         $this->repository = $repository;
         $this->post_type = $post_type;
@@ -274,7 +274,7 @@ class G2W_Publisher{
         $repo_structure = $this->repository->structure;
         $folder = trim( $this->folder );
 
-        if( $folder != '/' || !empty( $folder ) ){
+        if( $folder != '/' && !empty( $folder ) ){
             if( array_key_exists( $folder, $repo_structure ) ){
                 $repo_structure = $repo_structure[ $folder ][ 'items' ];
             }else{
@@ -303,6 +303,11 @@ class G2W_Publisher{
         if( $this->stats[ 'posts' ][ 'failed' ] > 0 || $this->stats[ 'images' ][ 'failed' ] > 0 ){
             $result = 2;
             $message = 'One or more failures occurred while publishing';
+        }
+
+        if( count( $this->stats[ 'posts' ][ 'new' ] ) == 0 && count( $this->stats[ 'posts' ][ 'updated' ] ) == 0 ){
+            $result = 3;
+            $message = 'No new changed were made. All posts are up to date.';
         }
 
         $end_result = array(

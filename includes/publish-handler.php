@@ -45,7 +45,7 @@ class G2W_Publish_Handler{
 
     public static function publish_by_repo_full_name( $full_name ){
 
-        G2W_Utils::log( '********** Publishing posts by repository full name **********' );
+        G2W_Utils::log( '********** Publishing posts by repository full name ' .  $full_name  . ' **********' );
 
         $name_split = explode( '/', $full_name );
         if( count( $name_split ) != 2 ){

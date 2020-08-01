@@ -6,15 +6,15 @@ class G2W_Admin{
 
     public static function init(){
 
-        add_action( 'admin_menu', array( __class__, 'admin_menu' ) );
+        add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 
-        add_action( 'admin_enqueue_scripts', array( __class__, 'enqueue_scripts' ) );
+        add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 
     }
 
     public static function admin_menu(){
 
-        add_options_page( 'Github to WordPress', 'Github to WordPress', 'manage_options', 'github-to-wordpress', array( __class__, 'admin_page' ) );
+        add_options_page( 'Github to WordPress', 'Github to WordPress', 'manage_options', 'github-to-wordpress', array( __CLASS__, 'admin_page' ) );
 
     }
 
@@ -24,8 +24,8 @@ class G2W_Admin{
 
             wp_enqueue_style( 'g2w-admin-css', G2W_ADMIN_URL . '/css/style.css', array(), G2W_VERSION );
 
-            //wp_enqueue_script( 'jquery' );
-            //wp_enqueue_script( 'sc-admin-js', G2W_ADMIN_URL . '/js/script.js', array( 'jquery' ), G2W_VERSION );
+            wp_enqueue_script( 'jquery' );
+            wp_enqueue_script( 'sc-admin-js', G2W_ADMIN_URL . '/js/script.js', array( 'jquery' ), G2W_VERSION );
         
         }
 
@@ -38,6 +38,8 @@ class G2W_Admin{
         echo '<h1 class="g2w_title">Github to WordPress <span class="title-count">' . G2W_VERSION . '</span></h1>';
         echo '</div>';
         
+        echo '<div id="main">';
+
         echo '<div id="content">';
         
         $g = self::clean_get();
@@ -67,9 +69,19 @@ class G2W_Admin{
             self::pull_posts();
         }
 
-        echo '</div>';
+        if( $action == 'logs' ){
+            self::logs();
+        }
+
+        echo '</div>'; // #content
+
+        echo '<div id="sidebar">';
         
         echo '</div>';
+
+        echo '</div>'; // #main
+        
+        echo '</div>';  // .wrap
 
     }
 
@@ -112,6 +124,8 @@ class G2W_Admin{
         }
         echo '</div>';
 
+        self::general_settings();
+
     }
 
     public static function new_repo(){
@@ -120,7 +134,7 @@ class G2W_Admin{
 
     public static function edit_repo( $action = 'edit' ){
 
-        self::save_settings();
+        self::save_repo_settings();
 
         $all_repos = Github_To_WordPress::all_repositories();
         $g = self::clean_get();
@@ -229,13 +243,57 @@ class G2W_Admin{
 
         define( 'G2W_ON_GUI', true );
 
-        echo '<div class="pull_post_log">';
+        echo '<div class="log_wrap">';
         G2W_Publish_Handler::publish_by_id( $g[ 'id' ] );
         echo '</div>';
 
     }
 
-    public static function save_settings(){
+    public static function logs(){
+
+        echo '<div class="log_wrap">';
+
+        $lines = G2W_Utils::read_log();
+        foreach( $lines as $line ){
+            echo '<p>' . $line . '</p>';
+        }
+
+        echo '</div>';
+
+    }
+
+    public static function general_settings(){
+
+        self::save_general_settings();
+
+        echo '<h2>General settings</h2>';
+
+        $values = Github_To_WordPress::general_settings();
+
+        echo '<form method="post">';
+
+        echo '<table class="widefat">';
+        echo '<tbody>';
+
+        echo '<tr>';
+            echo '<td>Webhook secret</td>';
+            echo '<td><input type="password"  class="webhook_secret" name="g2w_webhook_secret" value="' . $values[ 'webhook_secret' ] . '" autocomplete="new-password" /><button class="button">Toggle</button>';
+            echo '<p>' . rest_url( '/g2w/v1/publish' ) . '</p>';
+            echo '</td>';
+        echo '</tr>';
+
+        echo '</tbody>';
+        echo '</table>';
+
+        wp_nonce_field( 'g2w_gs_nonce' );
+
+        echo '<p><button type="submit" class="button button-primary">Save settings</button></p>';
+
+        echo '</form>';
+
+    }
+    
+    public static function save_repo_settings(){
 
         if( $_POST && check_admin_referer( 'g2w_edit_nonce' ) ){
 
@@ -268,6 +326,30 @@ class G2W_Admin{
                 }else{
                     self::print_notice( 'Successfully saved the changes !' );
                 }
+            }else{
+                self::print_notice( 'Failed to save the settings !', 'error' );
+            }
+
+        }
+
+    }
+
+    public static function save_general_settings(){
+
+        if( $_POST && check_admin_referer( 'g2w_gs_nonce' ) ){
+            
+            $defaults = Github_To_WordPress::default_general_settings();
+            $p = wp_parse_args( self::clean_post(), $defaults );
+
+            $values = array();
+
+            foreach( $defaults as $field => $default ){
+                $form_field = 'g2w_' . $field;
+                $values[ $field ] = isset( $p[ $form_field ] ) ? sanitize_text_field( $p[ $form_field ] ) : $default;
+            }
+
+            if( update_option( 'g2w_general_settings', $values ) ){
+                self::print_notice( 'Successfully saved the changes !' );
             }else{
                 self::print_notice( 'Failed to save the settings !', 'error' );
             }

@@ -28,6 +28,7 @@ final class Github_To_WordPress{
         require_once( G2W_PATH . 'includes/publisher.php' );
         require_once( G2W_PATH . 'includes/publish-handler.php' );
         require_once( G2W_PATH . 'includes/parsedown.php' );
+        require_once( G2W_PATH . 'includes/webhook.php' );
 
         require_once( G2W_PATH . 'admin/admin.php' );
 
@@ -43,6 +44,12 @@ final class Github_To_WordPress{
         );
     }
 
+    public static function default_general_settings(){
+        return array(
+            'webhook_secret' => ''
+        );
+    }
+
     public static function all_repositories(){
 
         $repos_raw = get_option( 'g2w_repositories', array( array(), array('username' => 'vaakash'), array()) );
@@ -54,6 +61,15 @@ final class Github_To_WordPress{
         }
 
         return $repos;
+
+    }
+
+    public static function general_settings(){
+        
+        $settings = get_option( 'g2w_general_settings', array() );
+        $default_settings = self::default_general_settings();
+
+        return wp_parse_args( $settings, $default_settings );
 
     }
 

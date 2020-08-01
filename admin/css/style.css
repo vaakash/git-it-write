@@ -7,24 +7,40 @@
     margin: 5px 5px 0 0;
 }
 
+#main{
+    display: flex;
+}
+#content{
+    width: 80%;
+}
+#sidebar{
+    width: 20%;
+    padding: 0 15px;
+}
+
+table.widefat td {
+    padding: 15px;
+}
+
 .repo_item {
     background: #fff;
     border: 1px solid #dfdfdf;
     padding: 15px;
     border-radius: 5px;
-    max-width: 500px;
     margin-bottom: 15px;
 }
 
-.pull_post_log {
+.log_wrap {
     font-family: monospace;
     background: #000;
     color: #fff;
+    overflow: auto;
+    white-space: nowrap;
 }
-.pull_post_log > p {
+.log_wrap > p {
     margin: 0;
     padding: 5px 10px;
 }
-.pull_post_log > p:hover{
+.log_wrap > p:hover{
     background: #016087;
 }
