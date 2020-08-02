@@ -18,8 +18,6 @@ class G2W_Publish_Handler{
         $repo_config = $all_repos[ $repo_id ];
         $username = $repo_config[ 'username' ];
         $repo_name = $repo_config[ 'repository' ];
-        $post_type = $repo_config[ 'post_type' ];
-        $folder = $repo_config[ 'folder' ];
         $repository = false;
 
         // Cache the repository class object
@@ -31,7 +29,7 @@ class G2W_Publish_Handler{
             self::$repo_obj_cache[ $username ][ $repo_name ] = $repository;
         }
 
-        $publisher = new G2W_Publisher( $repository, $post_type, $folder );
+        $publisher = new G2W_Publisher( $repository, $repo_config );
         $result = $publisher->publish();
 
         $all_repos[ $repo_id ][ 'last_publish' ] = time();

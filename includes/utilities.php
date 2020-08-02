@@ -100,6 +100,43 @@ class G2W_Utils{
 
     }
 
+    public static function select_field( $list, $name, $selected ){
+
+        $field_html = '';
+        $field_html .= "<select name='$name' required='required'>";
+        foreach( $list as $k => $v ){
+            $field_html .= "<option value='$k' " . selected( $selected, $k, false ) . ">$v</option>";
+        }
+        $field_html .= "</select>";
+        
+        return $field_html;
+
+    }
+
+    public static function post_type_selector( $name, $selected ){
+
+        $post_types = get_post_types( array(), 'objects' );
+        $result = array( '' => '' );
+
+        foreach( $post_types as $post_type => $props ){
+
+            if( !$props->show_ui ) continue;
+
+            $text = $props->label;
+
+            $supports = array();
+            if( $props->hierarchical ) array_push( $supports, 'Hierarchical' );
+            if( $props->public ) array_push( $supports, 'Public' );
+
+            $supports_text = empty( $supports ) ? '' : (' (' . implode( ', ', $supports ) . ')' );
+
+            $result[ $post_type ] = $text . $supports_text;
+        }
+
+        return self::select_field( $result, $name, $selected );
+
+    }
+
 }
 
 ?>

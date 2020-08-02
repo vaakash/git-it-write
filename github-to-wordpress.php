@@ -38,8 +38,9 @@ final class Github_To_WordPress{
         return array(
             'username' => '',
             'repository' => '',
-            'folder' => '/',
-            'post_type' => 'doc',
+            'folder' => '',
+            'post_type' => '',
+            'post_author' => 1,
             'last_publish' => 0
         );
     }

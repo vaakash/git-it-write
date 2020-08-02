@@ -31,11 +31,12 @@ class G2W_Publisher{
         'md', 'html', 'txt'
     );
 
-    public function __construct( G2W_Repository $repository, $post_type, $folder ){
+    public function __construct( G2W_Repository $repository, $repo_config ){
 
         $this->repository = $repository;
-        $this->post_type = $post_type;
-        $this->folder = $folder;
+        $this->post_type = $repo_config[ 'post_type' ];
+        $this->folder = $repo_config[ 'folder' ];
+        $this->post_author = $repo_config[ 'post_author' ];
         
         $this->parsedown = new G2W_Parsedown();
         $this->parsedown->uploaded_images = get_option( 'g2w_uploaded_images', array() );
@@ -83,7 +84,7 @@ class G2W_Publisher{
 
     public function create_post( $post_id, $item_slug, $item_props, $parent ){
 
-        G2W_Utils::log( sprintf( '---------- Checking post %s under parent %s ----------', $post_id, $parent ) );
+        G2W_Utils::log( sprintf( '---------- Checking post [%s] under parent [%s] ----------', $post_id, $parent ) );
 
         // If post exists, check if it has changed and proceed further
         if( $post_id ){
@@ -108,15 +109,28 @@ class G2W_Publisher{
                 return false;
             }
 
-            $item_content = $this->parsedown->text( $item_content );
-            $front_matter = $item_content[ 'front_matter' ];
+            $parsed_content = $this->parsedown->text( $item_content );
+            $content = $parsed_content[ 'html' ];
+            $front_matter = $parsed_content[ 'front_matter' ];
+
+            // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
-            $content = $item_content[ 'html' ];
+            $post_status = empty( $front_matter[ 'post_status' ] ) ? 'publish' : $front_matter[ 'post_status' ];
+            $post_excerpt = empty( $front_matter[ 'post_excerpt' ] ) ? '' : $front_matter[ 'post_excerpt' ];
+            $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
+            $taxonomy = $front_matter[ 'taxonomy' ];
+
             $sha = $item_props[ 'sha' ];
             $github_url = $item_props[ 'github_url' ];
 
         }else{
+
             $post_title = $item_slug;
+            $post_status = 'publish';
+            $post_excerpt = '';
+            $menu_order = 0;
+            $taxonomy = array();
+
             $content = '';
             $sha = '';
             $github_url = '';
@@ -128,8 +142,11 @@ class G2W_Publisher{
             'post_name' => $item_slug,
             'post_content' => $content,
             'post_type' => $this->post_type,
-            'post_status' => 'publish',
+            'post_author' => $this->post_author,
+            'post_status' => $post_status,
+            'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
+            'menu_order' => $menu_order,
             'meta_input' => array(
                 'sha' => $sha,
                 'github_url' => $github_url
@@ -139,11 +156,25 @@ class G2W_Publisher{
         $new_post_id = wp_insert_post( $post_details );
 
         if( is_wp_error( $new_post_id ) || empty( $new_post_id ) ){
-            G2W_Utils::log( 'Failed to publish post' );
+            G2W_Utils::log( 'Failed to publish post - ' . $new_post_id->get_error_message() );
             $this->stats[ 'posts' ][ 'failed' ]++;
             return false;
         }else{
             G2W_Utils::log( '---------- Published post: ' . $new_post_id . ' ----------' );
+
+            // Set the post taxonomy
+            if( !empty( $taxonomy ) ){
+                foreach( $taxonomy as $tax_name => $terms ){
+                    G2W_Utils::log( 'Setting taxonomy to post - ' . $tax_name );
+                    if( !taxonomy_exists( $tax_name ) ){
+                        continue;
+                    }
+                    $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
+                    if( is_wp_error( $set_tax ) ){
+                        G2W_Utils::log( 'Failed to set taxonomy - ' . $set_tax->get_error_message() );
+                    }
+                }
+            }
 
             $stat_key = $new_post_id == $post_id ? 'updated' : 'new';
             $this->stats[ 'posts' ][ $stat_key ][ $new_post_id ] = get_post_permalink( $new_post_id );

@@ -6,7 +6,10 @@ class G2W_Parsedown extends Parsedown{
 
     public $default_front_matter = array(
         'title' => '',
-        'order' => ''
+        'menu_order' => 0,
+        'post_status' => 'publish',
+        'post_excerpt' => '',
+        'taxonomy' => array()
     );
 
     public $allowed_file_types = array(

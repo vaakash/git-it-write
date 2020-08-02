@@ -37,7 +37,7 @@ class G2W_Admin{
         echo '<div class="head_wrap">';
         echo '<h1 class="g2w_title">Github to WordPress <span class="title-count">' . G2W_VERSION . '</span></h1>';
         echo '</div>';
-        
+
         echo '<div id="main">';
 
         echo '<div id="content">';
@@ -112,7 +112,7 @@ class G2W_Admin{
             echo '<div>Repository: ' . $config[ 'repository' ] . '</div>';
             echo '<div>Folder to publish from: ' . $config[ 'folder' ] . '</div>';
 
-            echo '<div>Last publish on: ' . $config[ 'last_publish' ] . '</div>';
+            echo '<div>Last published: ' . human_time_diff( $config[ 'last_publish' ] ) . '</div>';
 
             echo '<footer>';
             echo '<a href="' . self::link( 'edit', $id ) . '">Edit</a> | ';
@@ -172,12 +172,12 @@ class G2W_Admin{
 
         echo '<tr>';
             echo '<td>Username</td>';
-            echo '<td><input type="text" class="widefat" name="g2w_username" value="' . $values[ 'username' ] . '" /></td>';
+            echo '<td><input type="text" class="widefat" name="g2w_username" value="' . $values[ 'username' ] . '" required="required" /></td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Repository</td>';
-            echo '<td><input type="text" class="widefat" name="g2w_repository" value="' . $values[ 'repository' ] . '" /></td>';
+            echo '<td><input type="text" class="widefat" name="g2w_repository" value="' . $values[ 'repository' ] . '" required="required" /></td>';
         echo '</tr>';
 
         echo '<tr>';
@@ -187,13 +187,18 @@ class G2W_Admin{
 
         echo '<tr>';
             echo '<td>Post type to publish to</td>';
-            echo '<td><input type="text" class="widefat" name="g2w_post_type" value="' . $values[ 'post_type' ] . '" /></td>';
+            echo '<td>' . G2W_utils::post_type_selector( 'g2w_post_type', $values[ 'post_type' ] ) . '</td>';
+        echo '</tr>';
+
+        echo '<tr>';
+            echo '<td>Author to set for the post</td>';
+            echo '<td>' . wp_dropdown_users( array('name' => 'g2w_post_author', 'selected' => $values[ 'post_author' ], 'echo' => false ) ) . '</td>';
         echo '</tr>';
 
         echo '</tbody>';
         echo '</table>';
 
-        echo '<input type="text" name="g2w_id" value="' . $id . '" />';
+        echo '<input type="hidden" name="g2w_id" value="' . $id . '" />';
 
         wp_nonce_field( 'g2w_edit_nonce' );
 
