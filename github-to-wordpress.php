@@ -41,6 +41,7 @@ final class Github_To_WordPress{
             'folder' => '',
             'post_type' => '',
             'post_author' => 1,
+            'content_template' => '%%content%%',
             'last_publish' => 0
         );
     }

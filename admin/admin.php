@@ -98,31 +98,50 @@ class G2W_Admin{
 
         if( empty( $all_repos ) || count( $all_repos ) == 1 ){
             echo '<p class="description">No repositories configured. Go ahead and add one !</p>';
-        }
+        }else{
 
-        echo '<div class="repo_list">';
+        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<thead>
+            <tr>
+                <th width="40px">ID</th>
+                <th>Repository</th>
+                <th>Folder to publish</th>
+                <th>Post type to publish under</th>
+                <th>Last published</th>
+            </tr>
+        </thead>
+        <tbody>';
+
         foreach( $all_repos as $id => $config ){
 
             if( $id == 0 ){
                 continue;
             }
 
-            echo '<div class="repo_item">';
-            echo '<div>User: ' . $config[ 'username' ] . '</div>';
-            echo '<div>Repository: ' . $config[ 'repository' ] . '</div>';
-            echo '<div>Folder to publish from: ' . $config[ 'folder' ] . '</div>';
+            echo '<tr>';
 
-            echo '<div>Last published: ' . human_time_diff( $config[ 'last_publish' ] ) . '</div>';
+            echo '<th>' . $id . '</th>';
 
-            echo '<footer>';
-            echo '<a href="' . self::link( 'edit', $id ) . '">Edit</a> | ';
-            echo '<a href="' . self::link( 'pull', $id, array( '_wpnonce' => wp_create_nonce( 'g2w_pull_nonce' ) ) ) . '">Pull posts</a> | ';
-            echo '<a href="' . self::link( 'delete', $id, array( '_wpnonce' => wp_create_nonce( 'g2w_delete_nonce' ) ) ) . '">Delete</a>';
-            echo '</footer>';
-
+            echo '<td class="title column-title has-row-actions column-primary page-title">';
+            echo '<a href="' . self::link( 'edit', $id ) . '" class="row-title">' . $config[ 'username' ] . '/' . $config[ 'repository' ] . '</a>';
+            echo '<div class="row-actions">';
+            echo '<span><a href="' . self::link( 'edit', $id ) . '">Edit</a> | </span>';
+            echo '<span><a href="' . self::link( 'pull', $id ) . '">Pull posts</a> | </span>';
+            echo '<span class="trash"><a href="' . self::link( 'delete', $id, array( '_wpnonce' => wp_create_nonce( 'g2w_delete_nonce' ) ) ) . '">Delete</a></span>';
             echo '</div>';
+            '</td>';
+
+            echo '<td>' . ( empty( $config[ 'folder' ] ) ? 'Root' : $config[ 'folder' ] ) . '</td>';
+            echo '<td>' . $config[ 'post_type' ] . '</td>';
+            echo '<td>' . ( $config[ 'last_publish' ] == 0 ? '-' : human_time_diff( $config[ 'last_publish' ] ) ) . '</td>';
+
+            echo '</tr>';
         }
-        echo '</div>';
+
+        echo '</tbody>';
+        echo '</table>';
+
+        } // End if
 
         self::general_settings();
 
@@ -140,7 +159,7 @@ class G2W_Admin{
         $g = self::clean_get();
         $id = 0;
 
-        $page_title = ( $action == 'edit' ) ? 'Edit settings' : 'Add new repository to publish posts from';
+        $page_title = ( $action == 'edit' ) ? 'Edit repository settings' : 'Add new repository to publish posts from';
         $save_button = ( $action == 'edit' ) ? 'Save settings' : 'Add repository' ;
 
         $values = Github_To_WordPress::default_config();
@@ -195,6 +214,17 @@ class G2W_Admin{
             echo '<td>' . wp_dropdown_users( array('name' => 'g2w_post_author', 'selected' => $values[ 'post_author' ], 'echo' => false ) ) . '</td>';
         echo '</tr>';
 
+        echo '<tr>';
+            echo '<td>Post content template</td>';
+            echo '<td>';
+            wp_editor( $values[ 'content_template' ], 'g2w_content_template', array(
+                'media_buttons' => false,
+                'teeny' => true,
+                'textarea_rows' => 4
+            ));
+            echo '</td>';
+        echo '</tr>';
+
         echo '</tbody>';
         echo '</table>';
 
@@ -239,17 +269,41 @@ class G2W_Admin{
 
         $g = self::clean_get();
 
-        if( !isset( $g[ 'id' ] ) || !check_admin_referer( 'g2w_pull_nonce' ) ){
+        if( !isset( $g[ 'id' ] ) ){
             self::print_notice( 'No repository ID provided to pull posts from', 'error' );
             return;
         }
 
-        echo '<h2>Pulling posts from Github</h2>';
+        $id = $g[ 'id' ];
+
+        echo '<h2>Pull posts from Github for [' . $id . ']</h2>';
+
+        echo '<table class="widefat striped">';
+        echo '<tbody>
+        <tr>
+            <th>To pull only the latest changes made to the repository and publish posts, select this option</td>
+            <td><a class="button" href="' . self::link( 'pull', $id, array( 'pull' => 'changes', '_wpnonce' => wp_create_nonce( 'g2w_pull_nonce' ) ) ) . '">Pull only changes</a></td>
+        </tr>
+        <tr>
+            <th>To pull all the items even though unchanged and to overwrite all the published posts related to this repository, select this option</td>
+            <td><a class="button" href="' . self::link( 'pull', $id, array( 'pull' => 'force', '_wpnonce' => wp_create_nonce( 'g2w_pull_nonce' ) ) ) . '">Pull all the files</a></td>
+        </tr>
+        </tbody>';
+        echo '</table>';
+
+        if( !isset( $g[ 'pull' ] ) || !check_admin_referer( 'g2w_pull_nonce' ) ){
+            return;
+        }
+
+        echo '<h2>Pulling posts [' . $g[ 'pull' ] . ']</h2>';
 
         define( 'G2W_ON_GUI', true );
+        if( $g[ 'pull' ] == 'force' ){
+            define( 'G2W_PUBLISH_FORCE', true );
+        }
 
         echo '<div class="log_wrap">';
-        G2W_Publish_Handler::publish_by_id( $g[ 'id' ] );
+        G2W_Publish_Handler::publish_by_id( $id );
         echo '</div>';
 
     }
@@ -282,7 +336,7 @@ class G2W_Admin{
 
         echo '<tr>';
             echo '<td>Webhook secret</td>';
-            echo '<td><input type="password"  class="webhook_secret" name="g2w_webhook_secret" value="' . $values[ 'webhook_secret' ] . '" autocomplete="new-password" /><button class="button">Toggle</button>';
+            echo '<td><input type="password" class="webhook_secret" name="g2w_webhook_secret" value="' . $values[ 'webhook_secret' ] . '" autocomplete="new-password" /> &nbsp;<button class="button">Toggle view</button>';
             echo '<p>' . rest_url( '/g2w/v1/publish' ) . '</p>';
             echo '</td>';
         echo '</tr>';
@@ -310,7 +364,7 @@ class G2W_Admin{
 
             foreach( $defaults as $field => $default ){
                 $form_field = 'g2w_' . $field;
-                $values[ $field ] = isset( $p[ $form_field ] ) ? sanitize_text_field( $p[ $form_field ] ) : $default;
+                $values[ $field ] = isset( $p[ $form_field ] ) ? wp_kses_post( $p[ $form_field ] ) : $default;
             }
 
             if( !isset( $p[ 'g2w_id' ] ) || empty( $p[ 'g2w_id' ] ) || !$p[ 'g2w_id' ] ){ // If no ID, then new item

@@ -100,6 +100,24 @@ class G2W_Utils{
 
     }
 
+    public static function process_content_template( $template, $content ){
+
+        $content = do_shortcode( $content );
+
+        $search = array(
+            '%%content%%'
+        );
+
+        $replace = array(
+            $content
+        );
+
+        $result = str_replace( $search, $replace, $template );
+
+        return $result;
+
+    }
+
     public static function select_field( $list, $name, $selected ){
 
         $field_html = '';

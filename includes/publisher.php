@@ -4,11 +4,13 @@ class G2W_Publisher{
 
     public $repository;
 
-    public $post_type;
-
     public $folder;
 
-    public $existing_posts = array();
+    public $post_type;
+
+    public $post_author;
+
+    public $content_template;
 
     public $stats = array(
         'posts' => array(
@@ -37,6 +39,7 @@ class G2W_Publisher{
         $this->post_type = $repo_config[ 'post_type' ];
         $this->folder = $repo_config[ 'folder' ];
         $this->post_author = $repo_config[ 'post_author' ];
+        $this->content_template = $repo_config[ 'content_template' ];
         
         $this->parsedown = new G2W_Parsedown();
         $this->parsedown->uploaded_images = get_option( 'g2w_uploaded_images', array() );
@@ -92,8 +95,12 @@ class G2W_Publisher{
             $post_meta = $this->get_post_meta( $post_id );
 
             if( $post_meta[ 'sha' ] == $item_props[ 'sha' ] ){
-                G2W_Utils::log( 'Post is unchanged. Checking next.' );
-                return $post_id;
+                G2W_Utils::log( 'Post is unchanged' );
+                if( !defined( 'G2W_PUBLISH_FORCE' ) ){
+                    return $post_id;
+                }else{
+                    G2W_Utils::log( 'Forcefully updating post' );
+                }
             }
 
         }
@@ -110,8 +117,8 @@ class G2W_Publisher{
             }
 
             $parsed_content = $this->parsedown->text( $item_content );
-            $content = $parsed_content[ 'html' ];
             $front_matter = $parsed_content[ 'front_matter' ];
+            $content = G2W_Utils::process_content_template( $this->content_template, $parsed_content[ 'html' ] );
 
             // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
