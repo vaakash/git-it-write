@@ -46,7 +46,10 @@ class G2W_Admin{
         $action = isset( $g[ 'action' ] ) ? $g[ 'action' ] : 'manage';
         
         if( $action != 'manage' ){
-            echo '<p><a href="' . self::link() . '" class="button"><span class="dashicons dashicons-arrow-left-alt"></span> Back</a></p>';
+            echo '<p class="toolbar">';
+            echo '<a href="' . self::link() . '" class="button"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>';
+            self::toolbar_extra();
+            echo '</p>';
         }
 
         if( $action == 'manage' || empty( $action ) ){
@@ -76,7 +79,7 @@ class G2W_Admin{
         echo '</div>'; // #content
 
         echo '<div id="sidebar">';
-        
+            self::sidebar();
         echo '</div>';
 
         echo '</div>'; // #main
@@ -89,9 +92,10 @@ class G2W_Admin{
 
         $all_repos = Github_To_WordPress::all_repositories();
 
-        echo '<p>';
-        echo '<a href="' . self::link( 'new' ) . '" class="button button-primary"><span class="dashicons dashicons-plus"></span> Add a new repository to publish from</a> ';
+        echo '<p class="toolbar">';
+        echo '<a href="' . self::link( 'new' ) . '" class="button button-primary"><span class="dashicons dashicons-plus"></span> Add a new repository to publish posts from</a>';
         echo '<a href="' . self::link( 'logs' ) . '" class="button"><span class="dashicons dashicons-text"></span> Logs</a>';
+        self::toolbar_extra();
         echo '</p>';
 
         echo '<h2>Configured repositories</h2>';
@@ -133,7 +137,7 @@ class G2W_Admin{
 
             echo '<td>' . ( empty( $config[ 'folder' ] ) ? 'Root' : $config[ 'folder' ] ) . '</td>';
             echo '<td>' . $config[ 'post_type' ] . '</td>';
-            echo '<td>' . ( $config[ 'last_publish' ] == 0 ? '-' : human_time_diff( $config[ 'last_publish' ] ) ) . '</td>';
+            echo '<td>' . ( $config[ 'last_publish' ] == 0 ? '-' : human_time_diff( $config[ 'last_publish' ] ) . ' ago' ) . '</td>';
 
             echo '</tr>';
         }
@@ -186,32 +190,42 @@ class G2W_Admin{
 
         echo '<form method="post">';
 
-        echo '<table class="widefat">';
+        echo '<table class="form-table widefat">';
         echo '<tbody>';
 
         echo '<tr>';
-            echo '<td>Username</td>';
-            echo '<td><input type="text" class="widefat" name="g2w_username" value="' . $values[ 'username' ] . '" required="required" /></td>';
+            echo '<td style="width: 300px">Github username/owner</td>';
+            echo '<td><input type="text" name="g2w_username" value="' . $values[ 'username' ] . '" required="required" />';
+            echo '<p class="description">The username of the Github repository</p>';
+            echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
-            echo '<td>Repository</td>';
-            echo '<td><input type="text" class="widefat" name="g2w_repository" value="' . $values[ 'repository' ] . '" required="required" /></td>';
+            echo '<td>Repository name</td>';
+            echo '<td><input type="text" name="g2w_repository" value="' . $values[ 'repository' ] . '" required="required" />';
+            echo '<p class="description">The name of the Github repository to pull and publish posts from</p>';
+            echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Folder to publish from</td>';
-            echo '<td><input type="text" class="widefat" name="g2w_folder" value="' . $values[ 'folder' ] . '" /></td>';
+            echo '<td><input type="text"name="g2w_folder" value="' . $values[ 'folder' ] . '" />';
+            echo '<p class="description">The folder in the repository from which posts have to be published. Leave blank to publish from the root of the repository. Example: website/main/docs</p>';
+            echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Post type to publish to</td>';
-            echo '<td>' . G2W_utils::post_type_selector( 'g2w_post_type', $values[ 'post_type' ] ) . '</td>';
+            echo '<td>' . G2W_utils::post_type_selector( 'g2w_post_type', $values[ 'post_type' ] );
+            echo '<p class="description">The post type to publish the posts under. Hierarchial post types are preferred as they support level by level pages.</p>';
+            echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
-            echo '<td>Author to set for the post</td>';
-            echo '<td>' . wp_dropdown_users( array('name' => 'g2w_post_author', 'selected' => $values[ 'post_author' ], 'echo' => false ) ) . '</td>';
+            echo '<td>Author to set for the posts</td>';
+            echo '<td>' . wp_dropdown_users( array('name' => 'g2w_post_author', 'selected' => $values[ 'post_author' ], 'echo' => false ) );
+            echo '<p class="description">The user to be set as post author for all the posts pulled from this repository</p>';
+            echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
@@ -222,6 +236,7 @@ class G2W_Admin{
                 'teeny' => true,
                 'textarea_rows' => 4
             ));
+            echo '<p class="description">The template of the post content. Use any text, HTML, shortcode you would like to be added to all the posts when they are published. Supported placeholder <code>%%content%%</code> (The HTML of the pulled post). Use shortcode <code>[g2w_edit_link]</code> to insert a link of the source Github file to edit and collaborate. You might need to "Pull all the files" to update the post if the template is changed.</p>';
             echo '</td>';
         echo '</tr>';
 
@@ -331,13 +346,14 @@ class G2W_Admin{
 
         echo '<form method="post">';
 
-        echo '<table class="widefat">';
+        echo '<table class="form-table widefat">';
         echo '<tbody>';
 
         echo '<tr>';
-            echo '<td>Webhook secret</td>';
+            echo '<td style="width: 200px">Webhook secret</td>';
             echo '<td><input type="password" class="webhook_secret" name="g2w_webhook_secret" value="' . $values[ 'webhook_secret' ] . '" autocomplete="new-password" /> &nbsp;<button class="button">Toggle view</button>';
-            echo '<p>' . rest_url( '/g2w/v1/publish' ) . '</p>';
+            echo '<p class="description">Go to Github repository settings --> Webhook and add a webhook for the payload URL <code>' . rest_url( '/g2w/v1/publish' ) . '</code> if you would like to automatically publish the changes whenever repository is updated.</p>';
+            echo '<p class="description">Select content-type as <code>application/json</code> and enter a secret text. Provide the same secret text in the above field. Select "Just the push event" for the webhook trigger. Make sure all the repositories you would like to automatically update have the same payload URL and the secret.</p>';
             echo '</td>';
         echo '</tr>';
 
@@ -415,6 +431,37 @@ class G2W_Admin{
 
         }
 
+    }
+
+    public static function sidebar(){
+
+        echo '<div class="side_card">';
+        echo '<h2><span class="dashicons dashicons-info"></span> Get updates</h2>';
+        echo '<p>Get updates on the WordPress plugins, tips and tricks to enhance your WordPress experience. No spam.</p>';
+
+    echo '<form class="subscribe_form" action="https://aakashweb.us19.list-manage.com/subscribe/post?u=b7023581458d048107298247e&amp;id=ef5ab3c5c4" method="post" name="mc-embedded-subscribe-form" target="_blank" novalidate>
+        <input type="email" value="" name="EMAIL" class="required subscribe_email_box" id="mce-EMAIL" placeholder="Your email address">
+        <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_b7023581458d048107298247e_ef5ab3c5c4" tabindex="-1" value=""></div>
+        <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button subscribe_btn">
+    </form>';
+
+        echo '<a href="https://www.facebook.com/aakashweb" target="_blank" class="cta_link">Follow me on Facebook <span class="dashicons dashicons-arrow-right-alt"></span></a>';
+        echo '<a href="https://www.twitter.com/aakashweb" target="_blank" class="cta_link">Follow me on Twitter <span class="dashicons dashicons-arrow-right-alt"></span></a>';
+        echo '</div>';
+
+        echo '<div class="side_card">';
+        echo '<h2><span class="dashicons dashicons-sos"></span> Help &amp; Support</h2>';
+        echo '<p>Got any issue or not sure how to achieve what you are looking for with the plugin or have any idea or missing feature ? Let me know. Please post a topic in the forum for an answer.</p>';
+        echo '<a class="cta_link" href="https://www.aakashweb.com/forum/discuss/wordpress-plugins/github-to-wordpress/" target="_blank">Visit the support forum <span class="dashicons dashicons-arrow-right-alt"></span></a>';
+        echo '</div>';
+
+    }
+
+    public static function toolbar_extra(){
+        echo '<span class="extra">';
+        echo '<a href="https://www.paypal.me/vaakash/6" target="_blank" class="button">☕ Buy me a Coffee !</a>';
+        echo '<a href="https://wordpress.org/support/plugin/github-to-wordpress/reviews/?rate=5#new-post" target="_blank" class="button">⭐ Rate this plugin</a>';
+        echo '</span>';
     }
 
     public static function link( $action = false, $id = false, $more = array() ){

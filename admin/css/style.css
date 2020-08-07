@@ -11,13 +11,8 @@
     display: flex;
 }
 #content{
-    width: 80%;
+    width: calc(100% - 300px);
 }
-#sidebar{
-    width: 20%;
-    padding: 0 15px;
-}
-
 #content h2 {
     margin: 45px 0 15px 0;
     font-size: 1.5em;
@@ -49,4 +44,107 @@ table.widefat td {
 }
 .log_wrap > p:hover{
     background: #016087;
+}
+
+/* Toolbar */
+.toolbar .button{
+    margin-right: 10px;
+}
+.toolbar .extra{
+    float: right;
+}
+.toolbar .extra > .button:last-child{
+    margin-right: 0;
+}
+
+/* Sidebar */
+#sidebar{
+    flex: 1;
+    margin: 0 0 20px 30px;
+}
+.side_card {
+    padding: 20px;
+    background-position: 30px center;
+    margin-bottom: 15px;
+    background-size: 95px;
+    background-color: #fff;
+    border: 1px solid #dfdfdf;
+}
+.side_card h2 {
+    margin: -20px -20px 20px -20px;
+    padding: 12.5px 15px;
+    border-bottom: 1px solid #dfdfdf;
+    font-size: 1.2em;
+}
+.side_card h2 .dashicons {
+    margin: 0 10px 0 0;
+}
+.side_card p {
+    font-size: 14px;
+}
+.side_card .cta_link {
+    display: block;
+    margin: 10px 0;
+    text-decoration: none;
+    font-size: 14px;
+}
+.side_card .cta_link:last-child {
+    margin-bottom: 0;
+}
+.side_card .cta_link .dashicons{
+    margin-left: 2.5px;
+}
+.side_card .cta_link:hover .dashicons{
+    margin-left: 5px;
+}
+.side_banner{
+    display: block;
+    margin: -20px -20px 20px -20px;
+    border-bottom: 1px solid #dfdfdf;
+    line-height: 0;
+    overflow: hidden;
+}
+.side_banner img{
+    width: 100%;
+}
+.side_banner:hover img{
+    opacity: 0.8;
+}
+
+/* Subscribe form */
+.subscribe_form {
+    display: flex;
+    padding: 15px;
+    background: #f7f7f7;
+    border-radius: 5px;
+    margin: 20px 0;
+    flex-direction: column;
+}
+.subscribe_form .subscribe_email_box {
+    width: 100%;
+    margin-bottom: 10px;
+}
+.subscribe_form .subscribe_btn .dashicons{
+    font-size: 16px;
+    width: 16px;
+    margin: 7px 3px 0 0;
+}
+
+@media screen and (max-width: 950px) {
+    #main{
+        display: block;
+    }
+    #content{
+        width: 100%;
+        padding-right: 0;
+    }
+    #sidebar{
+        margin: 20px 0 0 0;
+        width: 100%;
+    }
+    .toolbar .extra{
+        float: none;
+        display: block;
+        margin-top: 10px;
+    }
 }
