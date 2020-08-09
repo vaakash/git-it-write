@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) ) exit;
+
 class G2W_Publish_Handler{
 
     public static $repo_obj_cache = array();

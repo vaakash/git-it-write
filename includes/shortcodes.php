@@ -1,0 +1,43 @@
+<?php
+
+if( ! defined( 'ABSPATH' ) ) exit;
+
+class G2W_Shortcodes{
+
+    public static function init(){
+
+        add_shortcode( 'g2w_edit_link', array( __CLASS__, 'edit_link' ) );
+
+    }
+
+    public static function edit_link( $atts ){
+
+        global $post;
+
+        $atts = shortcode_atts( array(
+            'post_id' => $post->ID,
+            'text' => 'Edit this page',
+            'icon' => '<i class="fas fa-pen"></i> &nbsp; '
+        ), $atts );
+
+        if( empty( $atts[ 'post_id' ] ) ){
+            return '';
+        }
+
+        $meta = get_post_meta( $atts[ 'post_id' ], '', true );
+
+        if( !array_key_exists( 'github_url', $meta ) || empty( $meta[ 'github_url' ][0] ) ){
+            return '';
+        }
+
+        $github_url = $meta[ 'github_url' ][0];
+
+        return '<a href="' . $github_url . '" class="g2w-edit_link" target="_blank" rel="noreferrer noopener">' . $atts[ 'icon' ] . $atts[ 'text' ] . '</a>';
+
+    }
+
+}
+
+G2W_Shortcodes::init();
+
+?>

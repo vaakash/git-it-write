@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) ) exit;
+
 use Symfony\Component\Yaml\Yaml;
 
 class G2W_Parsedown extends Parsedown{
@@ -10,10 +12,6 @@ class G2W_Parsedown extends Parsedown{
         'post_status' => 'publish',
         'post_excerpt' => '',
         'taxonomy' => array()
-    );
-
-    public $allowed_file_types = array(
-        'md', 'html', 'txt'
     );
 
     public $uploaded_images = array();
@@ -62,7 +60,7 @@ class G2W_Parsedown extends Parsedown{
 
         // #2 - Remove .md file extension in relative URLs
         if( in_array( $first_character, array( '.', '/' ) ) ){
-            $href = G2W_Utils::remove_extension_relative_url( $href, $this->allowed_file_types );
+            $href = G2W_Utils::remove_extension_relative_url( $href );
         }
 
         $link_data[ 'element' ][ 'attributes' ][ 'href' ] = $prefix . $href;

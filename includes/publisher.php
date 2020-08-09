@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) ) exit;
+
 class G2W_Publisher{
 
     public $repository;
@@ -29,9 +31,7 @@ class G2W_Publisher{
         'github_url' => ''
     );
 
-    public $allowed_file_types = array(
-        'md', 'html', 'txt'
-    );
+    public $allowed_file_types = array();
 
     public function __construct( G2W_Repository $repository, $repo_config ){
 
@@ -40,9 +40,12 @@ class G2W_Publisher{
         $this->folder = $repo_config[ 'folder' ];
         $this->post_author = $repo_config[ 'post_author' ];
         $this->content_template = $repo_config[ 'content_template' ];
-        
+
         $this->parsedown = new G2W_Parsedown();
         $this->parsedown->uploaded_images = get_option( 'g2w_uploaded_images', array() );
+
+        $this->allowed_file_types = Github_To_WordPress::allowed_file_types();
+
     }
 
     public function get_posts_by_parent( $parent ){

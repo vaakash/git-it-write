@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) ) exit;
+
 class G2W_Admin{
 
     private static $pagehook = 'settings_page_github-to-wordpress';

@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) ) exit;
+
 class G2W_Utils{
 
     public static function log( $message = '' ){
@@ -45,11 +47,13 @@ class G2W_Utils{
 
     }
 
-    public static function remove_extension_relative_url( $url, $allowed_file_types ){
+    public static function remove_extension_relative_url( $url ){
         /**
          * Accepts only a relative URL. Starting with . or /
          * ./hello/abcd.md?param=value.md#heading => ./hello/abcd/?param=value.md#heading
         */
+
+        $allowed_file_types = Github_To_WordPress::allowed_file_types();
 
         $parts = parse_url( $url );
 
