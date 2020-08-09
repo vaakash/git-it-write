@@ -106,8 +106,6 @@ class G2W_Utils{
 
     public static function process_content_template( $template, $content ){
 
-        $content = do_shortcode( $content );
-
         $search = array(
             '%%content%%'
         );

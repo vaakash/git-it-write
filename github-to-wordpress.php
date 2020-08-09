@@ -2,7 +2,7 @@
 /*
 Plugin Name: Github to WordPress
 Plugin URI: https://www.aakashweb.com/
-Description: Publish markdown, HTML files present in a Github repository as posts to WordPress automatically
+Description: Publish markdown files present in a Github repository as posts to WordPress automatically
 Author: Aakash Chakravarthy
 Version: 1.0
 */
@@ -55,7 +55,7 @@ final class Github_To_WordPress{
 
     public static function allowed_file_types(){
         return array(
-            'md', 'html', 'txt'
+            'md'
         );
     }
 

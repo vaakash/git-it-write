@@ -14,8 +14,13 @@ class G2W_Shortcodes{
 
         global $post;
 
+        $current_post_id = '';
+        if( is_object( $post ) ){
+            $current_post_id = $post->ID;
+        }
+
         $atts = shortcode_atts( array(
-            'post_id' => $post->ID,
+            'post_id' => $current_post_id,
             'text' => 'Edit this page',
             'icon' => '<i class="fas fa-pen"></i> &nbsp; '
         ), $atts );
