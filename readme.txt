@@ -123,7 +123,12 @@ Yes, if you want to pull posts from the a folder in a repository then you can sp
 
 ## Screenshots
 
-1. 
+1. Your files in a Github repository
+2. Posts pulled and published from Github.
+3. Content of the published post.
+4. Published post.
+5. Plugin admin page.
+6. Repository configuration page.
 
 
 

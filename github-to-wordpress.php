@@ -4,6 +4,7 @@ Plugin Name: Github to WordPress
 Plugin URI: https://www.aakashweb.com/
 Description: Publish markdown files present in a Github repository as posts to WordPress automatically
 Author: Aakash Chakravarthy
+Author URI: https://www.aakashweb.com/
 Version: 1.0
 */
 
@@ -61,7 +62,7 @@ final class Github_To_WordPress{
 
     public static function all_repositories(){
 
-        $repos_raw = get_option( 'g2w_repositories', array( array(), array('username' => 'vaakash'), array()) );
+        $repos_raw = get_option( 'g2w_repositories', array( array() ) );
         $repos = array();
         $default_config = self::default_config();
 
