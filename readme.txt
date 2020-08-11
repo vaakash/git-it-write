@@ -1,7 +1,7 @@
-# Github to WordPress
+# Git it Write
 Contributors: vaakash
 Author URI: https://www.aakashweb.com/
-Plugin URI: https://www.aakashweb.com/wordpress-plugins/github-to-wordpress/
+Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
 Tags: github, markdown, editor, publish, posts, wordpress, import, custom post types
 Donate link: https://www.paypal.me/vaakash/
 License: GPLv2 or later
@@ -16,7 +16,7 @@ Publish markdown files present in a Github repository as posts to WordPress auto
 
 ## Description
 
-Github to WordPress allows to publish the markdown files present in a Github repository to your WordPress site. So with this plugin, whenever the files are added, updated in the repository the WordPress post will be added, updated accordingly.
+Git it Write allows to publish the markdown files present in a Github repository to your WordPress site. So with this plugin, whenever the files are added, updated in the repository the WordPress post will be added, updated accordingly.
 
 This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
 
@@ -87,22 +87,22 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 
 ### Links
 
-* [FAQ](https://www.aakashweb.com/docs/github-to-wordpress/)
+* [FAQ](https://www.aakashweb.com/docs/git-it-write/)
 * [Support forum/Report bugs](https://www.aakashweb.com/forum/)
 
 
 
 ## Installation
 
-1. Extract the zipped file and upload the folder `Github-To-WordPress` to to `/wp-content/plugins/` directory.
+1. Extract the zipped file and upload the folder `git-it-write` to to `/wp-content/plugins/` directory.
 1. Activate the plugin through the `Plugins` menu in WordPress.
-1. Open the admin page from the "Github to WordPress" link under the settings menu.
+1. Open the admin page from the "Git it Write" link under the settings menu.
 
 
 
 ## Frequently Asked Questions
 
-Please visit the [plugin documentation page](https://www.aakashweb.com/docs/github-to-wordpress/) for complete list of FAQs.
+Please visit the [plugin documentation page](https://www.aakashweb.com/docs/git-it-write/) for complete list of FAQs.
 
 ### When a post is edited in WordPress will that update the file in the Github repository ?
 

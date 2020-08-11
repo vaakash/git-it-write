@@ -2,7 +2,7 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
-class G2W_Repository{
+class GIW_Repository{
 
     public $repo;
 
@@ -100,18 +100,18 @@ class G2W_Repository{
 
     public function build_repo_structure(){
 
-        G2W_Utils::log( 'Building repo structure' );
+        GIW_Utils::log( 'Building repo structure' );
 
         $tree_url = $this->tree_url();
         $data = $this->get_json( $tree_url );
 
         if( !$data ){
-            G2W_Utils::log( 'Failed to fetch the repository tree' );
+            GIW_Utils::log( 'Failed to fetch the repository tree' );
             return false;
         }
 
         if( !property_exists( $data, 'tree' ) ){
-            G2W_Utils::log( 'Repository not found on Github !' );
+            GIW_Utils::log( 'Repository not found on Github !' );
             return false;
         }
 

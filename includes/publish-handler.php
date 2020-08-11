@@ -2,20 +2,20 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
-class G2W_Publish_Handler{
+class GIW_Publish_Handler{
 
     public static $repo_obj_cache = array();
 
     public static function publish_by_id( $repo_id ){
 
-        $all_repos = Github_To_WordPress::all_repositories();
+        $all_repos = Git_It_Write::all_repositories();
 
         if( !isset( $all_repos[ $repo_id ] ) ){
             return false;
         }
 
-        G2W_Utils::log( '********** Publishing posts by repository config ID **********' );
-        G2W_Utils::log( 'Working with repository config ID ' . $repo_id );
+        GIW_Utils::log( '********** Publishing posts by repository config ID **********' );
+        GIW_Utils::log( 'Working with repository config ID ' . $repo_id );
 
         $repo_config = $all_repos[ $repo_id ];
         $username = $repo_config[ 'username' ];
@@ -26,18 +26,18 @@ class G2W_Publish_Handler{
         if( array_key_exists( $username, self::$repo_obj_cache ) && array_key_exists( $repo_name, self::$repo_obj_cache[ $username ] ) ){
             $repository = self::$repo_obj_cache[ $username ][ $repo_name ];
         }else{
-            G2W_Utils::log( 'Creating repository object' );
-            $repository = new G2W_Repository( $username, $repo_name );
+            GIW_Utils::log( 'Creating repository object' );
+            $repository = new GIW_Repository( $username, $repo_name );
             self::$repo_obj_cache[ $username ][ $repo_name ] = $repository;
         }
 
-        $publisher = new G2W_Publisher( $repository, $repo_config );
+        $publisher = new GIW_Publisher( $repository, $repo_config );
         $result = $publisher->publish();
 
         $all_repos[ $repo_id ][ 'last_publish' ] = time();
-        update_option( 'g2w_repositories', $all_repos );
+        update_option( 'giw_repositories', $all_repos );
 
-        G2W_Utils::log( '********** END **********' );
+        GIW_Utils::log( '********** END **********' );
 
         return $result;
 
@@ -45,7 +45,7 @@ class G2W_Publish_Handler{
 
     public static function publish_by_repo_full_name( $full_name ){
 
-        G2W_Utils::log( '********** Publishing posts by repository full name ' .  $full_name  . ' **********' );
+        GIW_Utils::log( '********** Publishing posts by repository full name ' .  $full_name  . ' **********' );
 
         $name_split = explode( '/', $full_name );
         if( count( $name_split ) != 2 ){
@@ -56,19 +56,19 @@ class G2W_Publish_Handler{
         $username = $name_split[0];
         $repo_name = $name_split[1];
 
-        $all_repos = Github_To_WordPress::all_repositories();
+        $all_repos = Git_It_Write::all_repositories();
 
         foreach( $all_repos as $id => $repo ){
             if( $id == 0 ) continue;
 
             if( $repo[ 'username' ] == $username && $repo[ 'repository' ] == $repo_name ){
-                G2W_Utils::log( 'There is a repo configured for this' );
+                GIW_Utils::log( 'There is a repo configured for this' );
                 $result = self::publish_by_id( $id );
                 array_push( $all_results, $result );
             }
         }
 
-        G2W_Utils::log( '********** END **********' );
+        GIW_Utils::log( '********** END **********' );
 
         return $all_results;
 

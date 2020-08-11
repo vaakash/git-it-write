@@ -2,12 +2,12 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
-class G2W_Webhook{
+class GIW_Webhook{
 
     public static function init(){
 
         add_action( 'rest_api_init', function () {
-            register_rest_route( 'g2w/v1', '/publish', array(
+            register_rest_route( 'giw/v1', '/publish', array(
                 'methods' => 'GET',
                 'callback' => array( __CLASS__, 'handle_webhook'),
             ));
@@ -18,7 +18,7 @@ class G2W_Webhook{
     public static function handle_webhook( WP_REST_Request $req ){
 
         if( $req->get_header( 'X-GitHub-Delivery' ) ){
-            G2W_Utils::log('Got webhook delivery ' . $req->get_header( 'X-GitHub-Delivery' ) );
+            GIW_Utils::log('Got webhook delivery ' . $req->get_header( 'X-GitHub-Delivery' ) );
         }
 
         // User agent check
@@ -47,7 +47,7 @@ class G2W_Webhook{
 
         $got_signature = $req->get_header( 'X-Hub-Signature' );
 
-        $settings = Github_To_WordPress::general_settings();
+        $settings = Git_It_Write::general_settings();
         $secret = trim( $settings[ 'webhook_secret' ] );
 
         if( empty( $secret ) ){
@@ -70,21 +70,21 @@ class G2W_Webhook{
 
         $repo_full_name = $json[ 'repository' ][ 'full_name' ];
 
-        $result = G2W_Publish_Handler::publish_by_repo_full_name( $repo_full_name );
+        $result = GIW_Publish_Handler::publish_by_repo_full_name( $repo_full_name );
 
-        G2W_Utils::log( 'Successfully honored webhook event.' );
+        GIW_Utils::log( 'Successfully honored webhook event.' );
 
         return $result;
 
     }
 
     public static function error( $code, $message, $data ){
-        G2W_Utils::log( 'Error - ' . $message );
+        GIW_Utils::log( 'Error - ' . $message );
         return new WP_Error( $code, $message, $data );
     }
 
 }
 
-G2W_Webhook::init();
+GIW_Webhook::init();
 
 ?>

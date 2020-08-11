@@ -4,7 +4,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
 
 use Symfony\Component\Yaml\Yaml;
 
-class G2W_Parsedown extends Parsedown{
+class GIW_Parsedown extends Parsedown{
 
     public $default_front_matter = array(
         'title' => '',
@@ -60,7 +60,7 @@ class G2W_Parsedown extends Parsedown{
 
         // #2 - Remove .md file extension in relative URLs
         if( in_array( $first_character, array( '.', '/' ) ) ){
-            $href = G2W_Utils::remove_extension_relative_url( $href );
+            $href = GIW_Utils::remove_extension_relative_url( $href );
         }
 
         $link_data[ 'element' ][ 'attributes' ][ 'href' ] = $prefix . $href;

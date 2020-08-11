@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Github to WordPress
+Plugin Name: Git it Write
 Plugin URI: https://www.aakashweb.com/
 Description: Publish markdown files present in a Github repository as posts to WordPress automatically
 Author: Aakash Chakravarthy
@@ -8,11 +8,11 @@ Author URI: https://www.aakashweb.com/
 Version: 1.0
 */
 
-define( 'G2W_VERSION', '1.0' );
-define( 'G2W_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
-define( 'G2W_ADMIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) . 'admin' ) );
+define( 'GIW_VERSION', '1.0' );
+define( 'GIW_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
+define( 'GIW_ADMIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) . 'admin' ) );
 
-final class Github_To_WordPress{
+final class Git_It_Write{
 
     public static function init(){
         
@@ -24,15 +24,15 @@ final class Github_To_WordPress{
 
         require __DIR__ . '/vendor/autoload.php';
 
-        require_once( G2W_PATH . 'includes/utilities.php' );
-        require_once( G2W_PATH . 'includes/repository.php' );
-        require_once( G2W_PATH . 'includes/publisher.php' );
-        require_once( G2W_PATH . 'includes/publish-handler.php' );
-        require_once( G2W_PATH . 'includes/parsedown.php' );
-        require_once( G2W_PATH . 'includes/webhook.php' );
-        require_once( G2W_PATH . 'includes/shortcodes.php' );
+        require_once( GIW_PATH . 'includes/utilities.php' );
+        require_once( GIW_PATH . 'includes/repository.php' );
+        require_once( GIW_PATH . 'includes/publisher.php' );
+        require_once( GIW_PATH . 'includes/publish-handler.php' );
+        require_once( GIW_PATH . 'includes/parsedown.php' );
+        require_once( GIW_PATH . 'includes/webhook.php' );
+        require_once( GIW_PATH . 'includes/shortcodes.php' );
 
-        require_once( G2W_PATH . 'admin/admin.php' );
+        require_once( GIW_PATH . 'admin/admin.php' );
 
     }
 
@@ -62,7 +62,7 @@ final class Github_To_WordPress{
 
     public static function all_repositories(){
 
-        $repos_raw = get_option( 'g2w_repositories', array( array() ) );
+        $repos_raw = get_option( 'giw_repositories', array( array() ) );
         $repos = array();
         $default_config = self::default_config();
 
@@ -76,7 +76,7 @@ final class Github_To_WordPress{
 
     public static function general_settings(){
         
-        $settings = get_option( 'g2w_general_settings', array() );
+        $settings = get_option( 'giw_general_settings', array() );
         $default_settings = self::default_general_settings();
 
         return wp_parse_args( $settings, $default_settings );
@@ -85,6 +85,6 @@ final class Github_To_WordPress{
 
 }
 
-Github_To_WordPress::init();
+Git_It_Write::init();
 
 ?>

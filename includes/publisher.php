@@ -2,7 +2,7 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
-class G2W_Publisher{
+class GIW_Publisher{
 
     public $repository;
 
@@ -33,7 +33,7 @@ class G2W_Publisher{
 
     public $allowed_file_types = array();
 
-    public function __construct( G2W_Repository $repository, $repo_config ){
+    public function __construct( GIW_Repository $repository, $repo_config ){
 
         $this->repository = $repository;
         $this->post_type = $repo_config[ 'post_type' ];
@@ -41,10 +41,10 @@ class G2W_Publisher{
         $this->post_author = $repo_config[ 'post_author' ];
         $this->content_template = $repo_config[ 'content_template' ];
 
-        $this->parsedown = new G2W_Parsedown();
-        $this->parsedown->uploaded_images = get_option( 'g2w_uploaded_images', array() );
+        $this->parsedown = new GIW_Parsedown();
+        $this->parsedown->uploaded_images = get_option( 'giw_uploaded_images', array() );
 
-        $this->allowed_file_types = Github_To_WordPress::allowed_file_types();
+        $this->allowed_file_types = Git_It_Write::allowed_file_types();
 
     }
 
@@ -90,7 +90,7 @@ class G2W_Publisher{
 
     public function create_post( $post_id, $item_slug, $item_props, $parent ){
 
-        G2W_Utils::log( sprintf( '---------- Checking post [%s] under parent [%s] ----------', $post_id, $parent ) );
+        GIW_Utils::log( sprintf( '---------- Checking post [%s] under parent [%s] ----------', $post_id, $parent ) );
 
         // If post exists, check if it has changed and proceed further
         if( $post_id ){
@@ -98,11 +98,11 @@ class G2W_Publisher{
             $post_meta = $this->get_post_meta( $post_id );
 
             if( $post_meta[ 'sha' ] == $item_props[ 'sha' ] ){
-                G2W_Utils::log( 'Post is unchanged' );
-                if( !defined( 'G2W_PUBLISH_FORCE' ) ){
+                GIW_Utils::log( 'Post is unchanged' );
+                if( !defined( 'GIW_PUBLISH_FORCE' ) ){
                     return $post_id;
                 }else{
-                    G2W_Utils::log( 'Forcefully updating post' );
+                    GIW_Utils::log( 'Forcefully updating post' );
                 }
             }
 
@@ -114,14 +114,14 @@ class G2W_Publisher{
 
             // Some error in getting the item content
             if( !$item_content ){
-                G2W_Utils::log( 'Cannot retrieve post content, skipping this' );
+                GIW_Utils::log( 'Cannot retrieve post content, skipping this' );
                 $this->stats[ 'posts' ][ 'failed' ]++;
                 return false;
             }
 
             $parsed_content = $this->parsedown->text( $item_content );
             $front_matter = $parsed_content[ 'front_matter' ];
-            $content = G2W_Utils::process_content_template( $this->content_template, $parsed_content[ 'html' ] );
+            $content = GIW_Utils::process_content_template( $this->content_template, $parsed_content[ 'html' ] );
 
             // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
@@ -166,22 +166,22 @@ class G2W_Publisher{
         $new_post_id = wp_insert_post( $post_details );
 
         if( is_wp_error( $new_post_id ) || empty( $new_post_id ) ){
-            G2W_Utils::log( 'Failed to publish post - ' . $new_post_id->get_error_message() );
+            GIW_Utils::log( 'Failed to publish post - ' . $new_post_id->get_error_message() );
             $this->stats[ 'posts' ][ 'failed' ]++;
             return false;
         }else{
-            G2W_Utils::log( '---------- Published post: ' . $new_post_id . ' ----------' );
+            GIW_Utils::log( '---------- Published post: ' . $new_post_id . ' ----------' );
 
             // Set the post taxonomy
             if( !empty( $taxonomy ) ){
                 foreach( $taxonomy as $tax_name => $terms ){
-                    G2W_Utils::log( 'Setting taxonomy to post - ' . $tax_name );
+                    GIW_Utils::log( 'Setting taxonomy to post - ' . $tax_name );
                     if( !taxonomy_exists( $tax_name ) ){
                         continue;
                     }
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
-                        G2W_Utils::log( 'Failed to set taxonomy - ' . $set_tax->get_error_message() );
+                        GIW_Utils::log( 'Failed to set taxonomy - ' . $set_tax->get_error_message() );
                     }
                 }
             }
@@ -200,23 +200,23 @@ class G2W_Publisher{
 
         foreach( $repo_structure as $item_slug => $item_props ){
 
-            G2W_Utils::log( 'At repository item - ' . $item_slug);
+            GIW_Utils::log( 'At repository item - ' . $item_slug);
 
             $first_character = substr( $item_slug, 0, 1 );
             if( in_array( $first_character, array( '_', '.' ) ) ){
-                G2W_Utils::log( 'Items starting with _ . are skipped for publishing' );
+                GIW_Utils::log( 'Items starting with _ . are skipped for publishing' );
                 continue;
             }
 
             if( $item_props[ 'type' ] == 'file' ){
 
                 if( $item_slug == 'index' ){
-                    G2W_Utils::log( 'Skipping separate post for index' );
+                    GIW_Utils::log( 'Skipping separate post for index' );
                     continue;
                 }
 
                 if( !in_array( $item_props[ 'file_type' ], $this->allowed_file_types ) ){
-                    G2W_Utils::log( 'Skipping file as it is not an allowed file type' );
+                    GIW_Utils::log( 'Skipping file as it is not an allowed file type' );
                     continue;
                 }
 
@@ -258,10 +258,10 @@ class G2W_Publisher{
 
     public function upload_images(){
 
-        $uploaded_images = get_option( 'g2w_uploaded_images', array() );
+        $uploaded_images = get_option( 'giw_uploaded_images', array() );
 
         if( !isset( $this->repository->structure[ '_images' ] ) || $this->repository->structure[ '_images' ][ 'type' ] != 'directory' ){
-            G2W_Utils::log( 'No images directory in repository. Exiting' );
+            GIW_Utils::log( 'No images directory in repository. Exiting' );
             return array();
         }
 
@@ -269,14 +269,14 @@ class G2W_Publisher{
         $images = $images_dir[ 'items' ];
 
         foreach( $images as $image_slug => $image_props ){
-            G2W_Utils::log( 'Starting image ' . $image_slug );
+            GIW_Utils::log( 'Starting image ' . $image_slug );
             if( array_key_exists( $image_slug, $uploaded_images ) ){
-                G2W_Utils::log( $image_slug . ' is already uploaded' );
+                GIW_Utils::log( $image_slug . ' is already uploaded' );
                 continue;
             }
 
-            G2W_Utils::log( 'Uploading image ' . $image_slug );
-            G2W_Utils::log( $image_props );
+            GIW_Utils::log( 'Uploading image ' . $image_slug );
+            GIW_Utils::log( $image_props );
 
             $uploaded_image_id = media_sideload_image( $image_props[ 'raw_url' ], 0, null, 'id' );
             $uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
@@ -284,21 +284,21 @@ class G2W_Publisher{
             // Check if image is uploaded correctly and 
             if( !empty( $uploaded_image_url ) ){
 
-                G2W_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
+                GIW_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
 
                 $uploaded_images[ $image_slug ] = array(
                     'url' => $uploaded_image_url,
                     'id' => $uploaded_image_id
                 );
 
-                if( !update_option( 'g2w_uploaded_images', $uploaded_images ) ){
-                    G2W_Utils::log( 'Updated uploaded images cache' );
+                if( !update_option( 'giw_uploaded_images', $uploaded_images ) ){
+                    GIW_Utils::log( 'Updated uploaded images cache' );
                 }
 
                 $this->stats[ 'images' ][ 'uploaded' ][ $uploaded_image_id ] = $uploaded_image_url;
 
             }else{
-                G2W_Utils::log( 'Image upload failed for some reason' );
+                GIW_Utils::log( 'Image upload failed for some reason' );
             }
 
         }
@@ -327,16 +327,16 @@ class G2W_Publisher{
             }
         }
 
-        G2W_Utils::log( $repo_structure );
+        GIW_Utils::log( $repo_structure );
 
-        G2W_Utils::log( '++++++++++ Uploading images first ++++++++++' );
+        GIW_Utils::log( '++++++++++ Uploading images first ++++++++++' );
         $this->upload_images();
-        G2W_Utils::log( '++++++++++ Done ++++++++++' );
+        GIW_Utils::log( '++++++++++ Done ++++++++++' );
 
-        G2W_Utils::log( '++++++++++ Publishing posts ++++++++++' );
-        G2W_Utils::log( 'Allowed file types - ' . implode( ', ', $this->allowed_file_types ) );
+        GIW_Utils::log( '++++++++++ Publishing posts ++++++++++' );
+        GIW_Utils::log( 'Allowed file types - ' . implode( ', ', $this->allowed_file_types ) );
         $this->create_posts( $repo_structure, 0 );
-        G2W_Utils::log( '++++++++++ Done ++++++++++' );
+        GIW_Utils::log( '++++++++++ Done ++++++++++' );
 
         $message = 'Successfully published posts';
         $result = 1;
@@ -357,7 +357,7 @@ class G2W_Publisher{
             'stats' => $this->stats
         );
 
-        G2W_Utils::log( $end_result );
+        GIW_Utils::log( $end_result );
 
         return $end_result;
 

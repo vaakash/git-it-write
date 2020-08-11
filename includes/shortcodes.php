@@ -2,11 +2,11 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
-class G2W_Shortcodes{
+class GIW_Shortcodes{
 
     public static function init(){
 
-        add_shortcode( 'g2w_edit_link', array( __CLASS__, 'edit_link' ) );
+        add_shortcode( 'giw_edit_link', array( __CLASS__, 'edit_link' ) );
 
     }
 
@@ -37,12 +37,12 @@ class G2W_Shortcodes{
 
         $github_url = $meta[ 'github_url' ][0];
 
-        return '<a href="' . $github_url . '" class="g2w-edit_link" target="_blank" rel="noreferrer noopener">' . $atts[ 'icon' ] . $atts[ 'text' ] . '</a>';
+        return '<a href="' . $github_url . '" class="giw-edit_link" target="_blank" rel="noreferrer noopener">' . $atts[ 'icon' ] . $atts[ 'text' ] . '</a>';
 
     }
 
 }
 
-G2W_Shortcodes::init();
+GIW_Shortcodes::init();
 
 ?>

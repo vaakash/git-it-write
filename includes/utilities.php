@@ -2,13 +2,13 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
-class G2W_Utils{
+class GIW_Utils{
 
     public static function log( $message = '' ){
         
         try{
             
-            $file = G2W_PATH . 'logs/log.log';
+            $file = GIW_PATH . 'logs/log.log';
             $line_tmpl = '%s - %s';
             
             $message = is_array( $message ) ? json_encode( $message ) : $message;
@@ -18,7 +18,7 @@ class G2W_Utils{
             
             file_put_contents( $file, $line.PHP_EOL , FILE_APPEND | LOCK_EX );
             
-            if( defined( 'G2W_ON_GUI' ) ){
+            if( defined( 'GIW_ON_GUI' ) ){
                 show_message( $line );
             }
 
@@ -32,7 +32,7 @@ class G2W_Utils{
         // https://stackoverflow.com/a/2961685/306961
 
         $lines = array();
-        $fp = fopen( G2W_PATH . 'logs/log.log', 'r' );
+        $fp = fopen( GIW_PATH . 'logs/log.log', 'r' );
 
         while( !feof( $fp ) ){
             $line = fgets( $fp, 4096 );
@@ -53,7 +53,7 @@ class G2W_Utils{
          * ./hello/abcd.md?param=value.md#heading => ./hello/abcd/?param=value.md#heading
         */
 
-        $allowed_file_types = Github_To_WordPress::allowed_file_types();
+        $allowed_file_types = Git_It_Write::allowed_file_types();
 
         $parts = parse_url( $url );
 
@@ -82,7 +82,7 @@ class G2W_Utils{
 
     public static function get_repo_config_by_full_name( $full_name ){
 
-        $all_repos = Github_To_WordPress::all_repositories();
+        $all_repos = Git_It_Write::all_repositories();
 
         $name_split = explode( '/', $full_name );
         if( count( $name_split ) != 2 ){
