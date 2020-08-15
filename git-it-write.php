@@ -1,14 +1,14 @@
 <?php
 /*
 Plugin Name: Git it Write
-Plugin URI: https://www.aakashweb.com/
+Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
 Description: Publish markdown files present in a Github repository as posts to WordPress automatically
 Author: Aakash Chakravarthy
 Author URI: https://www.aakashweb.com/
-Version: 1.0
+Version: 1.0.1
 */
 
-define( 'GIW_VERSION', '1.0' );
+define( 'GIW_VERSION', '1.0.1' );
 define( 'GIW_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
 define( 'GIW_ADMIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) . 'admin' ) );
 

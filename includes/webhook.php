@@ -8,7 +8,7 @@ class GIW_Webhook{
 
         add_action( 'rest_api_init', function () {
             register_rest_route( 'giw/v1', '/publish', array(
-                'methods' => 'GET',
+                'methods' => 'POST',
                 'callback' => array( __CLASS__, 'handle_webhook'),
             ));
         });

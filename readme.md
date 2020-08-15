@@ -1,22 +1,6 @@
-# Git it Write - Write posts from Github
-Contributors: vaakash
-Author URI: https://www.aakashweb.com/
-Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
-Tags: github, markdown, editor, publish, posts, wordpress, import, custom post types
-Donate link: https://www.paypal.me/vaakash/
-License: GPLv2 or later
-Requires PHP: 5.3
-Requires at least: 4.4
-Tested up to: 5.5
-Stable tag: 1.0.1
+# Git it Write
 
-Publish markdown files present in a Github repository as posts to WordPress automatically
-
-
-
-## Description
-
-Git it Write allows to publish the markdown files present in a Github repository to your WordPress site. So with this plugin, whenever the files are added, updated in the repository the WordPress post will be added, updated accordingly.
+Git it Write is WordPress plugin which allows to publish the markdown files present in a Github repository to your WordPress site. So with this plugin, whenever the files are added, updated in the repository the WordPress post will be added, updated accordingly.
 
 This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
 
@@ -87,7 +71,6 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 * [FAQ](https://www.aakashweb.com/docs/git-it-write/)
 * [Support forum/Report bugs](https://www.aakashweb.com/forum/)
 * [Donate](https://www.paypal.me/vaakash/)
-* [Contribute on Github](https://github.com/vaakash/git-it-write)
 
 
 ## Installation
@@ -117,30 +100,3 @@ Any folder/file starting with `_` (underscore), `.` (dot) won't be considered fo
 ### Can I pull posts from a specific folder in the repository ?
 
 Yes, if you want to pull posts from the a folder in a repository then you can specify it in the plugin's repository settings page. For example, if a repository has a folder `website\main\docs` and if you want to pull only from docs folder, then you can specify `website\main\docs` in the plugin settings.
-
-
-## Screenshots
-
-1. Your files in a Github repository
-2. Posts pulled and published from Github.
-3. Content of the published post.
-4. Published post.
-5. Plugin admin page.
-6. Repository configuration page.
-
-
-
-## Changelog
-
-### 1.0.1
-* Fix: Webhook is changed to `POST` method.
-* Fix: Readme formatting.
-
-### 1.0
-* First version of the plugin.
-
-
-
-## Upgrade Notice
-
-Version 1.0 is the first version of the plugin.
