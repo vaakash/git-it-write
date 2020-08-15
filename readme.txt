@@ -89,7 +89,8 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 
 * [FAQ](https://www.aakashweb.com/docs/git-it-write/)
 * [Support forum/Report bugs](https://www.aakashweb.com/forum/)
-
+* [Donate](https://www.paypal.me/vaakash/)
+* [Contribute on Github](https://github.com/vaakash/git-it-write)
 
 
 ## Installation

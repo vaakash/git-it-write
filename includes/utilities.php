@@ -31,8 +31,14 @@ class GIW_Utils{
     public static function read_log( $total_lines = 500 ){
         // https://stackoverflow.com/a/2961685/306961
 
+        $log_path = GIW_PATH . 'logs/log.log';
+
+        if( !file_exists( $log_path ) ){
+            return array('Nothing logged yet !');
+        }
+
         $lines = array();
-        $fp = fopen( GIW_PATH . 'logs/log.log', 'r' );
+        $fp = fopen( $log_path, 'r' );
 
         while( !feof( $fp ) ){
             $line = fgets( $fp, 4096 );
