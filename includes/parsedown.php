@@ -4,7 +4,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
 
 use Symfony\Component\Yaml\Yaml;
 
-class GIW_Parsedown extends Parsedown{
+class GIW_Parsedown extends ParsedownExtra{
 
     public $default_front_matter = array(
         'title' => '',
@@ -16,7 +16,8 @@ class GIW_Parsedown extends Parsedown{
 
     public $uploaded_images = array();
 
-    public function text( $text ){
+    // Parses the front matter and the markdown from the content
+    public function parse_content( $text ){
 
         $pattern = '/^[\s\r\n]?---[\s\r\n]?$/sm';
         $parts = preg_split( $pattern, PHP_EOL.ltrim( $text ) );
@@ -24,7 +25,7 @@ class GIW_Parsedown extends Parsedown{
         if ( count( $parts ) < 3 ) {
             return array(
                 'front_matter' => $this->default_front_matter,
-                'html' => parent::text( $text )
+                'markdown' => $text
             );
         }
 
@@ -35,7 +36,7 @@ class GIW_Parsedown extends Parsedown{
 
         return array(
             'front_matter' => $front_matter,
-            'html' => parent::text( $markdown )
+            'markdown' => $markdown
         );
 
     }

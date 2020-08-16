@@ -8,7 +8,7 @@ License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
 Tested up to: 5.5
-Stable tag: 1.0.1
+Stable tag: 1.1
 
 Publish markdown files present in a Github repository as posts to WordPress automatically
 
@@ -131,6 +131,9 @@ Yes, if you want to pull posts from the a folder in a repository then you can sp
 
 
 ## Changelog
+
+### 1.1
+* New: Support for Parsedown extra
 
 ### 1.0.1
 * Fix: Webhook is changed to `POST` method.

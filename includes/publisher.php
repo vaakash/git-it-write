@@ -119,9 +119,11 @@ class GIW_Publisher{
                 return false;
             }
 
-            $parsed_content = $this->parsedown->text( $item_content );
+            $parsed_content = $this->parsedown->parse_content( $item_content );
+
             $front_matter = $parsed_content[ 'front_matter' ];
-            $content = GIW_Utils::process_content_template( $this->content_template, $parsed_content[ 'html' ] );
+            $html = $this->parsedown->text( $parsed_content[ 'markdown' ] );
+            $content = GIW_Utils::process_content_template( $this->content_template, $html );
 
             // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
