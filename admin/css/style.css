@@ -110,6 +110,10 @@ table.widefat td {
 .side_banner:hover img{
     opacity: 0.8;
 }
+#sidebar .side_btn{
+    width: 100%;
+    text-align: center;
+}
 
 /* Subscribe form */
 .subscribe_form {

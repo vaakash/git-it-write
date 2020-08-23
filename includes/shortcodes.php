@@ -22,7 +22,8 @@ class GIW_Shortcodes{
         $atts = shortcode_atts( array(
             'post_id' => $current_post_id,
             'text' => 'Edit this page',
-            'icon' => '<i class="fas fa-pen"></i> &nbsp; '
+            'icon' => '<i class="fas fa-pen"></i> &nbsp; ',
+            'auto_p' => false
         ), $atts );
 
         if( empty( $atts[ 'post_id' ] ) ){
@@ -37,7 +38,13 @@ class GIW_Shortcodes{
 
         $github_url = $meta[ 'github_url' ][0];
 
-        return '<a href="' . $github_url . '" class="giw-edit_link" target="_blank" rel="noreferrer noopener">' . $atts[ 'icon' ] . $atts[ 'text' ] . '</a>';
+        $link = '<a href="' . $github_url . '" class="giw-edit_link" target="_blank" rel="noreferrer noopener">' . $atts[ 'icon' ] . $atts[ 'text' ] . '</a>';
+
+        if( $atts[ 'auto_p' ] ){
+            return '<p>' . $link . '</p>';
+        }else{
+            return $link;
+        }
 
     }
 

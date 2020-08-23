@@ -10,6 +10,7 @@ class GIW_Webhook{
             register_rest_route( 'giw/v1', '/publish', array(
                 'methods' => 'POST',
                 'callback' => array( __CLASS__, 'handle_webhook'),
+                'permission_callback' => array( __CLASS__, 'check_permission' )
             ));
         });
 
@@ -81,6 +82,12 @@ class GIW_Webhook{
     public static function error( $code, $message, $data ){
         GIW_Utils::log( 'Error - ' . $message );
         return new WP_Error( $code, $message, $data );
+    }
+
+    public static function check_permission( $request ){
+        // No authentication needed right now. The main callback has various checks on the requestor.
+        // TODO - Move the checks in main callback here
+        return true;
     }
 
 }

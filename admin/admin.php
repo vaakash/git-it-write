@@ -103,7 +103,7 @@ class GIW_Admin{
         echo '<h2>Configured repositories</h2>';
 
         if( empty( $all_repos ) || count( $all_repos ) == 1 ){
-            echo '<p class="description">No repositories configured. Go ahead and add one !</p>';
+            echo '<p class="description">No repositories configured. Go ahead and add one ! See <a href="https://www.aakashweb.com/docs/git-it-write/" target="_blank">getting started</a> for more information.</p>';
         }else{
 
         echo '<table class="wp-list-table widefat fixed striped">';
@@ -455,7 +455,12 @@ class GIW_Admin{
         echo '<h2><span class="dashicons dashicons-sos"></span> Help &amp; Support</h2>';
         echo '<p>Got any issue or not sure how to achieve what you are looking for with the plugin or have any idea or missing feature ? Let me know. Please post a topic in the forum for an answer.</p>';
         echo '<a class="cta_link" href="https://www.aakashweb.com/forum/discuss/wordpress-plugins/git-it-write/" target="_blank">Visit the support forum <span class="dashicons dashicons-arrow-right-alt"></span></a>';
+        echo '<a class="cta_link" href="https://www.aakashweb.com/docs/git-it-write/" target="_blank">See plugin documentation <span class="dashicons dashicons-arrow-right-alt"></span></a>';
         echo '</div>';
+
+        echo '<p><a href="https://github.com/vaakash/git-it-write" class="button side_btn" target="_blank"><span class="dashicons dashicons-editor-code"></span> Contribute on Github</a></p>';
+
+        echo '<p><a href="https://twitter.com/intent/tweet?hashtags=wordpress,markdown,github&related=aakashweb&text=Check%20it%20out%20-%20%22Git%20it%20Write%22%20a%20new%20WordPress%20plugin%20to%20publish%20posts%20from%20Github%20using%20markdown%20files%20and%20allow%20people%20to%20collaborate%20%E2%9C%8D%20https://wordpress.org/plugins/git-it-write/" class="button side_btn" target="_blank"><span class="dashicons dashicons-share"></span> Share with friends</a></p>';
 
     }
 

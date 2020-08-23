@@ -131,6 +131,7 @@ class GIW_Publisher{
             $post_excerpt = empty( $front_matter[ 'post_excerpt' ] ) ? '' : $front_matter[ 'post_excerpt' ];
             $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
+            $custom_fields = $front_matter[ 'custom_fields' ];
 
             $sha = $item_props[ 'sha' ];
             $github_url = $item_props[ 'github_url' ];
@@ -142,11 +143,17 @@ class GIW_Publisher{
             $post_excerpt = '';
             $menu_order = 0;
             $taxonomy = array();
+            $custom_fields = array();
 
             $content = '';
             $sha = '';
             $github_url = '';
         }
+
+        $meta_input = array_merge( $custom_fields, array(
+            'sha' => $sha,
+            'github_url' => $github_url
+        ));
 
         $post_details = array(
             'ID' => $post_id,
@@ -159,10 +166,7 @@ class GIW_Publisher{
             'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
             'menu_order' => $menu_order,
-            'meta_input' => array(
-                'sha' => $sha,
-                'github_url' => $github_url
-            )
+            'meta_input' => $meta_input
         );
 
         $new_post_id = wp_insert_post( $post_details );

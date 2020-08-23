@@ -2,6 +2,10 @@
 
 Git it Write is WordPress plugin which allows to publish the markdown files present in a Github repository to your WordPress site. So with this plugin, whenever the files are added, updated in the repository the WordPress post will be added, updated accordingly.
 
+This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `Gatsby.js` on how content is written is markdown. This is a similar idea for WordPress where markdown data is parsed from Github and published as posts.
+
+**Live example:** [Source github repository](https://github.com/vaakash/aakash-web) (`/docs/` folder) to [Posts published](https://www.aakashweb.com/docs/)
+
 This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
 
 If a repository has files in the below structure,
@@ -20,7 +24,7 @@ Then below posts will be created like below (if permalinks are configured and th
     https:\\example.com\docs\guide\getting-started\
     https:\\example.com\help\faq\
 
-### What is the use of this plugin ?
+### 🎲 What is the use of this plugin ?
 
 * Publish posts using the files in your Github repository.
 * Write your posts in Markdown format.
@@ -28,13 +32,13 @@ Then below posts will be created like below (if permalinks are configured and th
 * Collaborate, involve communities on the files in Github and publish them on WordPress.
 * All the advantages of Git and it's version management system.
 
-### Some use cases
+### 🚀 Some use cases
 
 * Can be used for documentation posts, FAQs, Wikis etc.
 * Write blog posts.
 * Any articles which may need community involvement.
 
-### Features
+### ✨ Features
 
 * Markdown will be processed and post will be published as HTML.
 * Images used in the source file will be uploaded to WordPress.
@@ -43,9 +47,10 @@ Then below posts will be created like below (if permalinks are configured and th
 * Webhook support (whenever repository is changed, it updates the plugin to pull the latest changes and publish the posts)
 * Add multiple repositories.
 * Publish to any post type.
-* Posts are published in hierarchial manner if they are under folders. Example: a file dir1/hello.md will be posted as dir1/hello/ in WordPress if the post type supports hierarchy.
+* Posts are published in hierarchial manner if they are under folders. Example: a file `dir1/hello.md` will be posted as `dir1/hello/` in WordPress if the post type supports hierarchy.
+* Support for post metadata like setting tags, categories, custom fields.
 
-### Note
+### ℹ Note
 
 * Only Markdown files will be pulled and published right now
 * Posts won't be deleted when it's source file is deleted on Github.
@@ -53,11 +58,11 @@ Then below posts will be created like below (if permalinks are configured and th
 * It is preferred to select a post type which supports hierarchy.
 * Images have to present only in `_images` folder in the repository root. Markdown files have to relatively use them in the file.
 
-### Recommendation
+### 🥗 Recommendation
 
 It is recommended that a permalink structure is enabled in the WordPress site so that, if you have file under `docs\reference\my-post.md` then a post is published like `https://example.com/docs/reference/my-post/`. This will be the result when post type has hierarchy support. They will be posted level by level for every folder in the repository. The folder's post will be taken from the `index.md` file if exists under that folder.
 
-### Using the plugin
+### 🏃‍♂️ Using the plugin
 
 1. Have a Github repository where all the source files (markdown files) are maintained (organized in folders if needed the exact structure)
 1. In the plugin settings page, click add a new repository.
@@ -68,7 +73,7 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 
 ### Links
 
-* [FAQ](https://www.aakashweb.com/docs/git-it-write/)
+* [Documentation](https://www.aakashweb.com/docs/git-it-write/)
 * [Support forum/Report bugs](https://www.aakashweb.com/forum/)
 * [Donate](https://www.paypal.me/vaakash/)
 
