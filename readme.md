@@ -6,6 +6,8 @@ This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `G
 
 **Live example:** [Source github repository](https://github.com/vaakash/aakash-web) (`/docs/` folder) to [Posts published](https://www.aakashweb.com/docs/)
 
+**Download/Install:** [Git it write](https://wordpress.org/plugins/git-it-write/) on WordPress
+
 This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
 
 If a repository has files in the below structure,
@@ -18,7 +20,6 @@ If a repository has files in the below structure,
         faq.md
 
 Then below posts will be created like below (if permalinks are configured and the post type supports "hierarchy" i.e creating posts level by level (example: pages))
-
 
     https:\\example.com\docs\guide\introduction\
     https:\\example.com\docs\guide\getting-started\
