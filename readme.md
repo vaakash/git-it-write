@@ -4,9 +4,9 @@ Git it Write is WordPress plugin which allows to publish the markdown files pres
 
 This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `Gatsby.js` on how content is written is markdown. This is a similar idea for WordPress where markdown data is parsed from Github and published as posts.
 
-**Live example:** [Source github repository](https://github.com/vaakash/aakash-web) (`/docs/` folder) to [Posts published](https://www.aakashweb.com/docs/)
+👓 **Live example:** [Source github repository](https://github.com/vaakash/aakash-web) (`/docs/` folder) to [Posts published](https://www.aakashweb.com/docs/)
 
-**Download/Install:** [Git it write](https://wordpress.org/plugins/git-it-write/) on WordPress
+📦 **Download/Install:** [Git it write](https://wordpress.org/plugins/git-it-write/) on WordPress plugin repository
 
 This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
 
