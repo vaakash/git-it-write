@@ -6,16 +6,19 @@ class GIW_Repository{
 
     public $repo;
 
+    public $branch;
+
     public $user;
 
     public $parsedown;
 
     public $structure = array();
 
-    public function __construct( $user, $repo ){
+    public function __construct( $user, $repo, $branch ){
 
         $this->user = $user;
         $this->repo = $repo;
+        $this->branch = $branch;
 
         $this->build_repo_structure();
 
@@ -44,15 +47,15 @@ class GIW_Repository{
     }
 
     public function tree_url(){
-        return 'https://api.github.com/repos/' . $this->user . '/' . $this->repo . '/git/trees/master?recursive=1';
+        return 'https://api.github.com/repos/' . $this->user . '/' . $this->repo . '/git/trees/' . $this->branch . '?recursive=1';
     }
 
     public function raw_url( $file_path ){
-        return 'https://raw.githubusercontent.com/' . $this->user . '/' . $this->repo . '/master/' . $file_path;
+        return 'https://raw.githubusercontent.com/' . $this->user . '/' . $this->repo . '/' . $this->branch . '/' . $file_path;
     }
 
     public function github_url( $file_path ){
-        return 'https://github.com/' . $this->user . '/' . $this->repo . '/blob/master/' . $file_path;
+        return 'https://github.com/' . $this->user . '/' . $this->repo . '/blob/' . $this->branch . '/' . $file_path;
     }
 
     public function add_to_structure( $structure, $path_split, $item ){
@@ -100,18 +103,18 @@ class GIW_Repository{
 
     public function build_repo_structure(){
 
-        GIW_Utils::log( 'Building repo structure' );
+        GIW_Utils::log( 'Building repo structure...' );
 
         $tree_url = $this->tree_url();
         $data = $this->get_json( $tree_url );
 
         if( !$data ){
-            GIW_Utils::log( 'Failed to fetch the repository tree' );
+            GIW_Utils::log( 'Failed to fetch the repository tree! ['. $tree_url .']' );
             return false;
         }
 
         if( !property_exists( $data, 'tree' ) ){
-            GIW_Utils::log( 'Repository not found on Github !' );
+            GIW_Utils::log( 'Repository not found on Github! ['. $tree_url .']' );
             return false;
         }
 

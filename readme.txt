@@ -118,9 +118,13 @@ All markdown files will be published as posts.
 
 Any folder/file starting with `_` (underscore), `.` (dot) won't be considered for publishing.
 
+### Can I pull posts from a specific branch in the repository ?
+
+Yes, if you want to pull posts from a branch in a repository then you can specify it in the plugin's repository settings page.
+
 ### Can I pull posts from a specific folder in the repository ?
 
-Yes, if you want to pull posts from the a folder in a repository then you can specify it in the plugin's repository settings page. For example, if a repository has a folder `website\main\docs` and if you want to pull only from docs folder, then you can specify `website\main\docs` in the plugin settings.
+Yes, if you want to pull posts from a folder in a repository then you can specify it in the plugin's repository settings page. For example, if a repository has a folder `website\main\docs` and if you want to pull only from docs folder, then you can specify `website\main\docs` in the plugin settings.
 
 
 ## Screenshots

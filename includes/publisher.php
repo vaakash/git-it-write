@@ -6,6 +6,8 @@ class GIW_Publisher{
 
     public $repository;
 
+    public $branch;
+
     public $folder;
 
     public $post_type;
@@ -37,6 +39,7 @@ class GIW_Publisher{
 
         $this->repository = $repository;
         $this->post_type = $repo_config[ 'post_type' ];
+        $this->branch = empty( $repo_config[ 'branch' ] ) ? 'master' : $repo_config[ 'branch' ];
         $this->folder = $repo_config[ 'folder' ];
         $this->post_author = $repo_config[ 'post_author' ];
         $this->content_template = $repo_config[ 'content_template' ];
