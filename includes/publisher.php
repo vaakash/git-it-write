@@ -135,7 +135,7 @@ class GIW_Publisher{
             $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
-
+            
             $sha = $item_props[ 'sha' ];
             $github_url = $item_props[ 'github_url' ];
 
@@ -184,13 +184,15 @@ class GIW_Publisher{
             // Set the post taxonomy
             if( !empty( $taxonomy ) ){
                 foreach( $taxonomy as $tax_name => $terms ){
-                    GIW_Utils::log( 'Setting taxonomy to post - ' . $tax_name );
+                    GIW_Utils::log( 'Setting taxonomy [' . $tax_name . '] to post.' );
                     if( !taxonomy_exists( $tax_name ) ){
+                        GIW_Utils::log( 'Skipping taxonomy [' . $tax_name . '] - does not exist.' );
                         continue;
                     }
+
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
-                        GIW_Utils::log( 'Failed to set taxonomy - ' . $set_tax->get_error_message() );
+                        GIW_Utils::log( 'Failed to set taxonomy  [' . $set_tax->get_error_message() . ']' );
                     }
                 }
             }
