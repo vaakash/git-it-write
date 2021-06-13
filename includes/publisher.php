@@ -6,6 +6,8 @@ class GIW_Publisher{
 
     public $repository;
 
+    public $branch;
+
     public $folder;
 
     public $post_type;
@@ -37,6 +39,7 @@ class GIW_Publisher{
 
         $this->repository = $repository;
         $this->post_type = $repo_config[ 'post_type' ];
+        $this->branch = empty( $repo_config[ 'branch' ] ) ? 'master' : $repo_config[ 'branch' ];
         $this->folder = $repo_config[ 'folder' ];
         $this->post_author = $repo_config[ 'post_author' ];
         $this->content_template = $repo_config[ 'content_template' ];
@@ -132,7 +135,7 @@ class GIW_Publisher{
             $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
-
+            
             $sha = $item_props[ 'sha' ];
             $github_url = $item_props[ 'github_url' ];
 
@@ -181,13 +184,15 @@ class GIW_Publisher{
             // Set the post taxonomy
             if( !empty( $taxonomy ) ){
                 foreach( $taxonomy as $tax_name => $terms ){
-                    GIW_Utils::log( 'Setting taxonomy to post - ' . $tax_name );
+                    GIW_Utils::log( 'Setting taxonomy [' . $tax_name . '] to post.' );
                     if( !taxonomy_exists( $tax_name ) ){
+                        GIW_Utils::log( 'Skipping taxonomy [' . $tax_name . '] - does not exist.' );
                         continue;
                     }
+
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
-                        GIW_Utils::log( 'Failed to set taxonomy - ' . $set_tax->get_error_message() );
+                        GIW_Utils::log( 'Failed to set taxonomy  [' . $set_tax->get_error_message() . ']' );
                     }
                 }
             }

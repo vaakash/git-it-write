@@ -20,6 +20,7 @@ class GIW_Publish_Handler{
         $repo_config = $all_repos[ $repo_id ];
         $username = $repo_config[ 'username' ];
         $repo_name = $repo_config[ 'repository' ];
+        $branch = $repo_config[ 'branch' ];
         $repository = false;
 
         // Cache the repository class object
@@ -27,7 +28,7 @@ class GIW_Publish_Handler{
             $repository = self::$repo_obj_cache[ $username ][ $repo_name ];
         }else{
             GIW_Utils::log( 'Creating repository object' );
-            $repository = new GIW_Repository( $username, $repo_name );
+            $repository = new GIW_Repository( $username, $repo_name, $branch );
             self::$repo_obj_cache[ $username ][ $repo_name ] = $repository;
         }
 

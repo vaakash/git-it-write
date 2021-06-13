@@ -111,6 +111,7 @@ class GIW_Admin{
             <tr>
                 <th width="40px">ID</th>
                 <th>Repository</th>
+                <th>Branch</th>
                 <th>Folder to publish</th>
                 <th>Post type to publish under</th>
                 <th>Last published</th>
@@ -137,6 +138,7 @@ class GIW_Admin{
             echo '</div>';
             '</td>';
 
+            echo '<td>' . ( empty( $config[ 'branch' ] ) ? 'master' : $config[ 'branch' ] ) . '</td>';
             echo '<td>' . ( empty( $config[ 'folder' ] ) ? 'Root' : $config[ 'folder' ] ) . '</td>';
             echo '<td>' . $config[ 'post_type' ] . '</td>';
             echo '<td>' . ( $config[ 'last_publish' ] == 0 ? '-' : human_time_diff( $config[ 'last_publish' ] ) . ' ago' ) . '</td>';
@@ -206,6 +208,13 @@ class GIW_Admin{
             echo '<td>Repository name</td>';
             echo '<td><input type="text" name="giw_repository" value="' . $values[ 'repository' ] . '" required="required" />';
             echo '<p class="description">The name of the Github repository to pull and publish posts from</p>';
+            echo '</td>';
+        echo '</tr>';
+
+        echo '<tr>';
+            echo '<td>Branch to publish from</td>';
+            echo '<td><input type="text"name="giw_branch" value="' . $values[ 'branch' ] . '" />';
+            echo '<p class="description">The name of the repository branch to pull and publish posts from. Leave blank to default to "master". Example: main</p>';
             echo '</td>';
         echo '</tr>';
 
