@@ -5,17 +5,17 @@ Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
 Description: Publish markdown files present in a Github repository as posts to WordPress automatically
 Author: Aakash Chakravarthy
 Author URI: https://www.aakashweb.com/
-Version: 1.2
+Version: 1.3
 */
 
-define( 'GIW_VERSION', '1.2' );
+define( 'GIW_VERSION', '1.3' );
 define( 'GIW_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
 define( 'GIW_ADMIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) . 'admin' ) );
 
 final class Git_It_Write{
 
     public static function init(){
-        
+
         self::includes();
 
     }
@@ -76,7 +76,7 @@ final class Git_It_Write{
     }
 
     public static function general_settings(){
-        
+
         $settings = get_option( 'giw_general_settings', array() );
         $default_settings = self::default_general_settings();
 

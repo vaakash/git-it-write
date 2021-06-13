@@ -7,10 +7,10 @@ class GIW_Utils{
     public static function log( $message = '' ){
         
         try{
-            
-            $file = GIW_PATH . 'logs/log.log';
+
+            $file = self::log_file_path();
             $line_tmpl = '%s - %s';
-            
+
             $message = is_array( $message ) ? json_encode( $message ) : $message;
 
             $date = date('m/d/Y H:i');
@@ -31,7 +31,7 @@ class GIW_Utils{
     public static function read_log( $total_lines = 500 ){
         // https://stackoverflow.com/a/2961685/306961
 
-        $log_path = GIW_PATH . 'logs/log.log';
+        $log_path = self::log_file_path();
 
         if( !file_exists( $log_path ) ){
             return array('Nothing logged yet !');
@@ -50,6 +50,28 @@ class GIW_Utils{
         fclose( $fp );
 
         return $lines;
+
+    }
+
+    public static function logs_folder_path(){
+
+        $upload_dir_info = wp_upload_dir();
+        $logs_folder = $upload_dir_info[ 'basedir' ] . '/git-it-write';
+
+        if( !file_exists( $logs_folder ) ){
+            wp_mkdir_p( $logs_folder );
+            file_put_contents( $logs_folder . '/.htaccess', 'deny from all', FILE_APPEND | LOCK_EX );
+            file_put_contents( $logs_folder . '/index.html', '', FILE_APPEND | LOCK_EX );
+        }
+
+        return $logs_folder;
+
+    }
+
+    public static function log_file_path(){
+        
+        $logs_folder = self::logs_folder_path();
+        return $logs_folder . '/log.log';
 
     }
 

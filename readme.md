@@ -21,9 +21,9 @@ If a repository has files in the below structure,
 
 Then below posts will be created like below (if permalinks are configured and the post type supports "hierarchy" i.e creating posts level by level (example: pages))
 
-    https:\\example.com\docs\guide\introduction\
-    https:\\example.com\docs\guide\getting-started\
-    https:\\example.com\help\faq\
+    https://example.com/docs/guide/introduction/
+    https://example.com/docs/guide/getting-started/
+    https://example.com/help/faq/
 
 ### 🎲 What is the use of this plugin ?
 

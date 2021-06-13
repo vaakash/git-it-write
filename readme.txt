@@ -7,8 +7,8 @@ Donate link: https://www.paypal.me/vaakash/
 License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
-Tested up to: 5.5
-Stable tag: 1.2
+Tested up to: 5.8
+Stable tag: 1.3
 
 Publish markdown files present in a Github repository as posts to WordPress automatically
 
@@ -35,9 +35,9 @@ If a repository has files in the below structure,
 
 Then below posts will be created like below (if permalinks are configured and the post type supports "hierarchy" i.e creating posts level by level (example: pages))
 
-    https:\\example.com\docs\guide\introduction\
-    https:\\example.com\docs\guide\getting-started\
-    https:\\example.com\help\faq\
+    https://example.com/docs/guide/introduction/
+    https://example.com/docs/guide/getting-started/
+    https://example.com/help/faq/
 
 ### 🎲 What is the use of this plugin ?
 
@@ -139,6 +139,11 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 
 ## Changelog
+
+### 1.3
+* New: Support for git branches (Thanks to https://github.com/AppalachiaInteractive for the contribution)
+* New: Logs directory has been changed to the uploads directory.
+* Fix: Minor admin page enhancements.
 
 ### 1.2
 * New: Support for custom fields

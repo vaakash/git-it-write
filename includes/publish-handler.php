@@ -24,12 +24,12 @@ class GIW_Publish_Handler{
         $repository = false;
 
         // Cache the repository class object
-        if( array_key_exists( $username, self::$repo_obj_cache ) && array_key_exists( $repo_name, self::$repo_obj_cache[ $username ] ) ){
-            $repository = self::$repo_obj_cache[ $username ][ $repo_name ];
+        if( array_key_exists( $username, self::$repo_obj_cache ) && array_key_exists( $repo_name, self::$repo_obj_cache[ $username ] ) && array_key_exists( $branch, self::$repo_obj_cache[ $username ][ $repo_name ] ) ){
+            $repository = self::$repo_obj_cache[ $username ][ $repo_name ][ $branch ];
         }else{
             GIW_Utils::log( 'Creating repository object' );
             $repository = new GIW_Repository( $username, $repo_name, $branch );
-            self::$repo_obj_cache[ $username ][ $repo_name ] = $repository;
+            self::$repo_obj_cache[ $username ][ $repo_name ][ $branch ] = $repository;
         }
 
         $publisher = new GIW_Publisher( $repository, $repo_config );
@@ -46,7 +46,7 @@ class GIW_Publish_Handler{
 
     public static function publish_by_repo_full_name( $full_name ){
 
-        GIW_Utils::log( '********** Publishing posts by repository full name ' .  $full_name  . ' **********' );
+        GIW_Utils::log( '********** Publishing posts by repository full name ' . $full_name . ' **********' );
 
         $name_split = explode( '/', $full_name );
         if( count( $name_split ) != 2 ){

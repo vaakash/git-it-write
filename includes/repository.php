@@ -103,7 +103,7 @@ class GIW_Repository{
 
     public function build_repo_structure(){
 
-        GIW_Utils::log( 'Building repo structure...' );
+        GIW_Utils::log( 'Building repo structure ...' );
 
         $tree_url = $this->tree_url();
         $data = $this->get_json( $tree_url );

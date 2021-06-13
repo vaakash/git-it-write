@@ -321,6 +321,18 @@ class GIW_Admin{
             return;
         }
 
+        $all_repos = Git_It_Write::all_repositories();
+        if( !isset( $all_repos[ $id ] ) ){
+            self::print_notice( 'Invalid repository ID', 'error' );
+            return;
+        }
+
+        $pull_type = $g[ 'pull' ];
+        if( !in_array( $pull_type, array( 'force', 'changes' ) ) ){
+            self::print_notice( 'Invalid pull type', 'error' );
+            return;
+        }
+
         echo '<h2>Pulling posts [' . $g[ 'pull' ] . ']</h2>';
 
         define( 'GIW_ON_GUI', true );
@@ -451,13 +463,18 @@ class GIW_Admin{
         echo '<p>Get updates on the WordPress plugins, tips and tricks to enhance your WordPress experience. No spam.</p>';
 
     echo '<form class="subscribe_form" action="https://aakashweb.us19.list-manage.com/subscribe/post?u=b7023581458d048107298247e&amp;id=ef5ab3c5c4" method="post" name="mc-embedded-subscribe-form" target="_blank" novalidate>
-        <input type="email" value="" name="EMAIL" class="required subscribe_email_box" id="mce-EMAIL" placeholder="Your email address">
+        <input type="email" value="' . get_option( 'admin_email' ) . '" name="EMAIL" class="required subscribe_email_box" id="mce-EMAIL" placeholder="Your email address">
         <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_b7023581458d048107298247e_ef5ab3c5c4" tabindex="-1" value=""></div>
         <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button subscribe_btn">
-    </form>';
+    </form>
+    
+    <div class="follow_btns">
+    <a href="https://twitter.com/intent/follow?screen_name=aakashweb" target="_blank" class="button twitter_btn"><span class="dashicons dashicons-twitter"></span> Follow on Twitter</a>
+    <a href="https://www.facebook.com/aakashweb/" target="_blank" class="button facebook_btn"><span class="dashicons dashicons-facebook-alt"></span> on Facebook</a>
+    <a href="https://www.aakashweb.com/wordpress-plugins/" target="_blank" class="button"><span class="dashicons dashicons-arrow-right-alt2"></span> More WordPress plugins</a>
+    </div>
+    ';
 
-        echo '<a href="https://www.facebook.com/aakashweb" target="_blank" class="cta_link">Follow me on Facebook <span class="dashicons dashicons-arrow-right-alt"></span></a>';
-        echo '<a href="https://www.twitter.com/aakashweb" target="_blank" class="cta_link">Follow me on Twitter <span class="dashicons dashicons-arrow-right-alt"></span></a>';
         echo '</div>';
 
         echo '<div class="side_card">';
