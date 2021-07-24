@@ -208,6 +208,7 @@ class GIW_Publisher{
     public function create_posts( $repo_structure, $parent ){
 
         $existing_posts = $this->get_posts_by_parent( $parent );
+        $sanitized_item_slug = sanitize_title( $item_slug );
 
         foreach( $repo_structure as $item_slug => $item_props ){
 
@@ -231,7 +232,7 @@ class GIW_Publisher{
                     continue;
                 }
 
-                $post_id = array_key_exists( $item_slug, $existing_posts ) ? $existing_posts[ $item_slug ][ 'id' ] : 0;
+                $post_id = array_key_exists( $sanitized_item_slug, $existing_posts ) ? $existing_posts[ $sanitized_item_slug ][ 'id' ] : 0;
 
                 $this->create_post( $post_id, $item_slug, $item_props, $parent );
 
@@ -241,7 +242,7 @@ class GIW_Publisher{
 
                 $directory_post = false;
 
-                if( array_key_exists( $item_slug, $existing_posts ) ){
+                if( array_key_exists( $sanitized_item_slug, $existing_posts ) ){
                     $directory_post = $existing_posts[ $item_slug ][ 'id' ];
 
                     $index_props = array_key_exists( 'index', $item_props[ 'items' ] ) ? $item_props[ 'items' ][ 'index' ] : false;
@@ -280,8 +281,10 @@ class GIW_Publisher{
         $images = $images_dir[ 'items' ];
 
         foreach( $images as $image_slug => $image_props ){
+            $sanitized_image_slug = sanitize_title( $image_slug );
+
             GIW_Utils::log( 'Starting image ' . $image_slug );
-            if( array_key_exists( $image_slug, $uploaded_images ) ){
+            if( array_key_exists( $sanitized_image_slug, $uploaded_images ) ){
                 GIW_Utils::log( $image_slug . ' is already uploaded' );
                 continue;
             }
