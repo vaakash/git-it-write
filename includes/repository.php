@@ -26,13 +26,23 @@ class GIW_Repository{
 
     public function get( $url ){
 
-        $request = wp_remote_get( $url );
+        $general_settings = Git_It_Write::general_settings();
 
-        if( is_wp_error( $request ) ) {
+        $username = $general_settings[ 'github_username' ];
+        $access_token = $general_settings[ 'github_access_token' ];
+        $args = array(
+            'headers' => array(
+                'Authorization' => 'Basic ' . base64_encode($username . ':' . $access_token),
+            ),
+        ); 
+
+        $response = wp_remote_get( $url, $args );
+
+        if( is_wp_error( $response ) ) {
             return false;
         }
 
-        $body = wp_remote_retrieve_body( $request );
+        $body = wp_remote_retrieve_body( $response );
 
         return $body;
 

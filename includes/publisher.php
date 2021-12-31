@@ -96,7 +96,7 @@ class GIW_Publisher{
         GIW_Utils::log( sprintf( '---------- Checking post [%s] under parent [%s] ----------', $post_id, $parent ) );
 
         // If post exists, check if it has changed and proceed further
-        if( $post_id ){
+        if( $post_id && $item_props ){
 
             $post_meta = $this->get_post_meta( $post_id );
 
@@ -231,7 +231,8 @@ class GIW_Publisher{
                     continue;
                 }
 
-                $post_id = array_key_exists( $item_slug, $existing_posts ) ? $existing_posts[ $item_slug ][ 'id' ] : 0;
+                $item_slug_clean = sanitize_title( $item_slug );
+                $post_id = array_key_exists( $item_slug_clean, $existing_posts ) ? $existing_posts[ $item_slug_clean ][ 'id' ] : 0;
 
                 $this->create_post( $post_id, $item_slug, $item_props, $parent );
 
@@ -240,9 +241,10 @@ class GIW_Publisher{
             if( $item_props[ 'type' ] == 'directory' ){
 
                 $directory_post = false;
+                $item_slug_clean = sanitize_title( $item_slug );
 
-                if( array_key_exists( $item_slug, $existing_posts ) ){
-                    $directory_post = $existing_posts[ $item_slug ][ 'id' ];
+                if( array_key_exists( $item_slug_clean, $existing_posts ) ){
+                    $directory_post = $existing_posts[ $item_slug_clean ][ 'id' ];
 
                     $index_props = array_key_exists( 'index', $item_props[ 'items' ] ) ? $item_props[ 'items' ][ 'index' ] : false;
                     $this->create_post( $directory_post, $item_slug, $index_props, $parent );

@@ -57,6 +57,10 @@ table.widefat td {
     margin-right: 0;
 }
 
+.form-table h4{
+    margin: 0;
+}
+
 /* Sidebar */
 #sidebar{
     flex: 1;

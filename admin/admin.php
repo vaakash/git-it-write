@@ -380,6 +380,21 @@ class GIW_Admin{
             echo '</td>';
         echo '</tr>';
 
+        echo '<tr><td colspan="2"><h4>Authentication</h4></td></tr>';
+
+        echo '<tr>';
+            echo '<td>Github Username</td>';
+            echo '<td><input type="text" name="giw_github_username" value="' . $values[ 'github_username' ] . '" />';
+            echo '<p class="description">Your Github username for authenticating API calls.</p></td>';
+        echo '</tr>';
+
+        echo '<tr>';
+            echo '<td>Github Access token</td>';
+            echo '<td><input type="text" name="giw_github_access_token" value="' . $values[ 'github_access_token' ] . '" />';
+            echo '<p class="description">Create an access token by following <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-token" target="_blank">the instructions here.</a> Select <code>repo -> public_repo</code> under scopes and generate a token.
+            </p></td>';
+        echo '</tr>';
+
         echo '</tbody>';
         echo '</table>';
 
