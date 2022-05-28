@@ -30,7 +30,9 @@ class GIW_Publisher{
 
     public $default_post_meta = array(
         'sha' => '',
-        'github_url' => ''
+        'github_url' => '',
+		'item_slug' => '',
+		'item_slug_clean' => ''
     );
 
     public $allowed_file_types = array();
@@ -66,7 +68,40 @@ class GIW_Publisher{
 
             $result[ $post->post_name ] = array(
                 'id' => $post->ID,
-                'parent' => $post->post_parent
+                'parent' => $post->post_parent,
+				'item_slug' => get_post_meta($post->ID, 'item_slug', true),
+				'item_slug_clean' => get_post_meta($post->ID, 'item_slug_clean', true)
+            );
+        }
+
+        return $result;
+
+    }
+	
+	public function get_posts_slug_by_parent( $parent ){
+
+        $result = array();
+        $posts = get_posts(array(
+            'post_type' => $this->post_type,
+			'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit'),
+            'posts_per_page' => -1,
+            'post_parent' => $parent
+        ));
+
+        
+        foreach( $posts as $index => $post ){
+			
+			$item_slug = get_post_meta($post->ID, 'item_slug', true);
+			$item_slug_clean = get_post_meta($post->ID, 'item_slug_clean', true);
+			
+			//GIW_Utils::log( 'get_posts_slug_by_parent > post: ' . $post->post_name . ', id = ' . $post->ID );
+
+            $result[ $item_slug_clean ] = array(
+                'id' => $post->ID,
+                'parent' => $post->post_parent,
+				'item_slug' => $item_slug,
+				'item_slug_clean' => $item_slug_clean,
+				'post_name' => $post->post_name
             );
         }
 
@@ -76,7 +111,15 @@ class GIW_Publisher{
 
     public function get_post_meta( $post_id ){
 
-        $current_meta = get_post_meta( $post_id, '', true );
+		GIW_Utils::log( sprintf('Getting post meta for post %s', $post_id) );
+		
+		//foreach(get_post_meta($post_id) as $metaitem_key => $metaitem){
+		//	GIW_Utils::log( sprintf('Meta retrieved %s = %s', $metaitem_key, implode(',',$metaitem)) );
+		//}
+		
+		
+        $current_meta = get_post_meta( $post_id, '', false );
+		
         $metadata = array();
 
         if( !is_array( $current_meta ) ){
@@ -84,21 +127,27 @@ class GIW_Publisher{
         }
 
         foreach( $this->default_post_meta as $key => $default_val ){
-            $metadata[ $key ] = array_key_exists( $key, $current_meta ) ? $current_meta[$key][0] : $default_val;
+			$metadata_value = array_key_exists( $key, $current_meta ) ? $current_meta[$key][0] : $default_val;
+            $metadata[ $key ] = $metadata_value;
+			//GIW_Utils::log( sprintf('Meta %s = %s', $key, $metadata_value) );
         }
 
+		GIW_Utils::log( sprintf(' Meta retrieved = %s', implode(',', $metadata)) );
         return $metadata;
 
     }
 
     public function create_post( $post_id, $item_slug, $item_props, $parent ){
+		
+		//GIW_Utils::log( sprintf('Creating post with these parameters: id= [%s], slug= [%s], props= [%s], parent= [%s] ', $post_id, $item_slug, implode(', ', $item_props), $parent));
 
         GIW_Utils::log( sprintf( '---------- Checking post [%s] under parent [%s] ----------', $post_id, $parent ) );
 
         // If post exists, check if it has changed and proceed further
-        if( $post_id ){
+        if( $post_id && $item_props ){
 
             $post_meta = $this->get_post_meta( $post_id );
+			GIW_Utils::log(sprintf('Post meta = [%s]', implode(",", $post_meta)));
 
             if( $post_meta[ 'sha' ] == $item_props[ 'sha' ] ){
                 GIW_Utils::log( 'Post is unchanged' );
@@ -153,10 +202,14 @@ class GIW_Publisher{
             $github_url = '';
         }
 
+		$item_slug_clean = sanitize_title( $item_slug );
         $meta_input = array_merge( $custom_fields, array(
             'sha' => $sha,
-            'github_url' => $github_url
+            'github_url' => $github_url,
+			'item_slug' => $item_slug,
+			'item_slug_clean' => $item_slug_clean
         ));
+		GIW_Utils::log( sprintf('Meta input to insert with post = [%s]', implode(',', $meta_input)) );
 
         $post_details = array(
             'ID' => $post_id,
@@ -172,6 +225,7 @@ class GIW_Publisher{
             'meta_input' => $meta_input
         );
 
+		GIW_Utils::log( sprintf('Inserting the new post [%s]', implode(",", $post_details)) );
         $new_post_id = wp_insert_post( $post_details );
 
         if( is_wp_error( $new_post_id ) || empty( $new_post_id ) ){
@@ -180,6 +234,11 @@ class GIW_Publisher{
             return false;
         }else{
             GIW_Utils::log( '---------- Published post: ' . $new_post_id . ' ----------' );
+			
+			update_post_meta($new_post_id, 'item_slug', $item_slug);
+			update_post_meta($new_post_id, 'item_slug_clean', $item_slug_clean);
+			
+			GIW_Utils::log( '---- Post Meta updated : ' . $new_post_id . ' ----------' );
 
             // Set the post taxonomy
             if( !empty( $taxonomy ) ){
@@ -208,6 +267,7 @@ class GIW_Publisher{
     public function create_posts( $repo_structure, $parent ){
 
         $existing_posts = $this->get_posts_by_parent( $parent );
+		$existing_posts_slug = $this->get_posts_slug_by_parent( $parent );
 
         foreach( $repo_structure as $item_slug => $item_props ){
 
@@ -231,7 +291,14 @@ class GIW_Publisher{
                     continue;
                 }
 
-                $post_id = array_key_exists( $item_slug, $existing_posts ) ? $existing_posts[ $item_slug ][ 'id' ] : 0;
+                $item_slug_clean = sanitize_title( $item_slug );
+				
+				GIW_Utils::log( sprintf('Looking for post slug (%s) in existing posts slug', $item_slug_clean));
+				//foreach ($existing_posts_slug as $post_key => $mArray){
+				//	GIW_Utils::log( sprintf(' Item %s = %s', $post_key, implode(",", $mArray)) );
+				//}
+                $post_id = array_key_exists( $item_slug_clean, $existing_posts_slug ) ? $existing_posts_slug[ $item_slug_clean ][ 'id' ] : 0;
+				GIW_Utils::log( sprintf('Post Id found = %s, slug clean = %s', $post_id, $item_slug_clean) );
 
                 $this->create_post( $post_id, $item_slug, $item_props, $parent );
 
@@ -240,9 +307,10 @@ class GIW_Publisher{
             if( $item_props[ 'type' ] == 'directory' ){
 
                 $directory_post = false;
+                $item_slug_clean = sanitize_title( $item_slug );
 
-                if( array_key_exists( $item_slug, $existing_posts ) ){
-                    $directory_post = $existing_posts[ $item_slug ][ 'id' ];
+                if( array_key_exists( $item_slug_clean, $existing_posts ) ){
+                    $directory_post = $existing_posts[ $item_slug_clean ][ 'id' ];
 
                     $index_props = array_key_exists( 'index', $item_props[ 'items' ] ) ? $item_props[ 'items' ][ 'index' ] : false;
                     $this->create_post( $directory_post, $item_slug, $index_props, $parent );
