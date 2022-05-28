@@ -26,13 +26,23 @@ class GIW_Repository{
 
     public function get( $url ){
 
-        $request = wp_remote_get( $url );
+        $general_settings = Git_It_Write::general_settings();
 
-        if( is_wp_error( $request ) ) {
+        $username = $general_settings[ 'github_username' ];
+        $access_token = $general_settings[ 'github_access_token' ];
+        $args = array(
+            'headers' => array(
+                'Authorization' => 'Basic ' . base64_encode($username . ':' . $access_token),
+            ),
+        ); 
+
+        $response = wp_remote_get( $url, $args );
+
+        if( is_wp_error( $response ) ) {
             return false;
         }
 
-        $body = wp_remote_retrieve_body( $request );
+        $body = wp_remote_retrieve_body( $response );
 
         return $body;
 
@@ -49,9 +59,14 @@ class GIW_Repository{
     public function tree_url(){
         return 'https://api.github.com/repos/' . $this->user . '/' . $this->repo . '/git/trees/' . $this->branch . '?recursive=1';
     }
+	
+	public function raw_url_private_repo( $file_path ){
+		// https://github.com/BrightSoftwares/joyousbyflora-posts/raw/main/_images/daniel-jensen-UDleHDOhBZ8-unsplash.jpg
+        return 'https://github.com/' . $this->user . '/' . $this->repo . '/raw/' . $this->branch . '/' . $file_path;
+    }
 
     public function raw_url( $file_path ){
-        return 'https://raw.githubusercontent.com/' . $this->user . '/' . $this->repo . '/' . $this->branch . '/' . $file_path;
+		return 'https://raw.githubusercontent.com/' . $this->user . '/' . $this->repo . '/' . $this->branch . '/' . $file_path;
     }
 
     public function github_url( $file_path ){
@@ -77,6 +92,7 @@ class GIW_Repository{
             $structure[ $file_slug ] = array(
                 'type' => 'file',
                 'raw_url' => $this->raw_url( $item->path ),
+                'raw_url_private_repo' => $this->raw_url_private_repo( $item->path ),
                 'github_url' => $this->github_url( $item->path ),
                 'sha' => $item->sha,
                 'file_type' => strtolower( $extension )
@@ -133,6 +149,7 @@ class GIW_Repository{
     public function get_item_content( $item_props ){
 
         $content = $this->get( $item_props[ 'raw_url' ] );
+		//$content = $this->get( $item_props[ 'raw_url_private_repo' ] );
 
         if( !$content ){
             return false;
