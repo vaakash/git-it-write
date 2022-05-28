@@ -2,6 +2,10 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
+require_once(ABSPATH . 'wp-admin/includes/media.php');
+require_once(ABSPATH . 'wp-admin/includes/file.php');
+require_once(ABSPATH . 'wp-admin/includes/image.php');
+
 class GIW_Publisher{
 
     public $repository;
@@ -346,9 +350,10 @@ class GIW_Publisher{
 
         $images_dir = $this->repository->structure[ '_images' ];
         $images = $images_dir[ 'items' ];
+		GIW_Utils::log( sprintf( 'Images to process [%s]', implode(',', $images) ) );
 
         foreach( $images as $image_slug => $image_props ){
-            GIW_Utils::log( 'Starting image ' . $image_slug );
+            GIW_Utils::log( sprintf( 'Starting image [%s]', $image_slug ) );
             if( array_key_exists( $image_slug, $uploaded_images ) ){
                 GIW_Utils::log( $image_slug . ' is already uploaded' );
                 continue;
@@ -357,28 +362,48 @@ class GIW_Publisher{
             GIW_Utils::log( 'Uploading image ' . $image_slug );
             GIW_Utils::log( $image_props );
 
-            $uploaded_image_id = media_sideload_image( $image_props[ 'raw_url' ], 0, null, 'id' );
-            $uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
+			$image_raw_url = $image_props[ 'raw_url' ];
+			//$image_raw_url = $image_props[ 'raw_url_private_repo' ];
+			GIW_Utils::log( sprintf( 'Image raw url = [%s]', $image_raw_url ) );
+			
+			try {
+				$uploaded_image_id = media_sideload_image( $image_raw_url, 0, null, 'id' );
+				
+				if(is_wp_error( $uploaded_image_id )){
+					GIW_Utils::log( 'Image failed sideload. Error: ' . $uploaded_image_id->get_error_message() );
+				}
+				else {
+					GIW_Utils::log( 'Image success sideload. Id = ' . $uploaded_image_id );
 
-            // Check if image is uploaded correctly and 
-            if( !empty( $uploaded_image_url ) ){
+					$uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
+					if(is_wp_error( $uploaded_image_url )){
+						GIW_Utils::log( 'Image failed upload. Error: ' . $uploaded_image_url->get_error_message() );
+					}
 
-                GIW_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
+					// Check if image is uploaded correctly and 
+					if( !empty( $uploaded_image_url ) ){
 
-                $uploaded_images[ $image_slug ] = array(
-                    'url' => $uploaded_image_url,
-                    'id' => $uploaded_image_id
-                );
+						GIW_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
 
-                if( !update_option( 'giw_uploaded_images', $uploaded_images ) ){
-                    GIW_Utils::log( 'Updated uploaded images cache' );
-                }
+						$uploaded_images[ $image_slug ] = array(
+							'url' => $uploaded_image_url,
+							'id' => $uploaded_image_id
+						);
 
-                $this->stats[ 'images' ][ 'uploaded' ][ $uploaded_image_id ] = $uploaded_image_url;
+						if( !update_option( 'giw_uploaded_images', $uploaded_images ) ){
+							GIW_Utils::log( 'Updated uploaded images cache' );
+						}
 
-            }else{
-                GIW_Utils::log( 'Image upload failed for some reason' );
-            }
+						$this->stats[ 'images' ][ 'uploaded' ][ $uploaded_image_id ] = $uploaded_image_url;
+
+					}else{
+						GIW_Utils::log( 'Image upload failed for some reason' . $uploaded_image_url->get_error_message() );
+					}
+				}
+			} catch (\Throwable $e) {
+				GIW_Utils::log( 'Unexpected exception. Error: ' . $e->getMessage() );
+			}
+			
 
         }
 
