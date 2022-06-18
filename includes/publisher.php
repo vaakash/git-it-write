@@ -184,6 +184,8 @@ class GIW_Publisher{
             // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
             $post_status = empty( $front_matter[ 'post_status' ] ) ? 'publish' : $front_matter[ 'post_status' ];
+            $post_date = empty( $front_matter[ 'post_date' ] ) ? date(get_option('Y/m/d')) : $front_matter[ 'post_date' ];
+			$post_author = empty( $front_matter[ 'post_author' ] ) ? $this->post_author : $front_matter[ 'post_author' ];
             $post_excerpt = empty( $front_matter[ 'post_excerpt' ] ) ? '' : $front_matter[ 'post_excerpt' ];
             $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
@@ -196,6 +198,7 @@ class GIW_Publisher{
 
             $post_title = $item_slug;
             $post_status = 'publish';
+			$post_author = $this->post_author;
             $post_excerpt = '';
             $menu_order = 0;
             $taxonomy = array();
@@ -219,9 +222,10 @@ class GIW_Publisher{
             'ID' => $post_id,
             'post_title' => $post_title,
             'post_name' => $item_slug,
+			'post_date' => $post_date,
             'post_content' => $content,
             'post_type' => $this->post_type,
-            'post_author' => $this->post_author,
+            'post_author' => $post_author,
             'post_status' => $post_status,
             'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
@@ -262,9 +266,21 @@ class GIW_Publisher{
 
             $stat_key = $new_post_id == $post_id ? 'updated' : 'new';
             $this->stats[ 'posts' ][ $stat_key ][ $new_post_id ] = get_post_permalink( $new_post_id );
+			
+			
+			// Upload the featured image
+			$featured_image = $front_matter[ 'featured_image' ];
+			if(!empty( $featured_image )){
+				GIW_Utils::log( 'Uploading featured image ' . $featured_image );
+				$this->upload_featured_image($featured_image, $new_post_id);
+			} else {
+				GIW_Utils::log( 'Featured image not set/empty : ' . $featured_image );
+			}
 
             return $new_post_id;
         }
+		
+		
 
     }
 
@@ -338,8 +354,8 @@ class GIW_Publisher{
         }
 
     }
-
-    public function upload_images(){
+	
+	public function upload_images(){
 
         $uploaded_images = get_option( 'giw_uploaded_images', array() );
 
@@ -411,6 +427,75 @@ class GIW_Publisher{
         $this->parsedown->uploaded_images = $uploaded_images;
 
         return $uploaded_images;
+
+    }
+
+    public function upload_featured_image($image_url, $post_id){
+
+		GIW_Utils::log( sprintf( 'Starting image [%s]', $image_url ) );
+		if( has_post_thumbnail( $post_id ) ){
+			GIW_Utils::log( $image_url . ' is already uploaded' );
+			//continue;
+		} else {
+			GIW_Utils::log( 'Uploading image ' . $image_url );
+			//GIW_Utils::log( $image_props );
+
+			$image_raw_url = $image_url; //$image_props[ 'raw_url' ];
+			//$image_raw_url = $image_props[ 'raw_url_private_repo' ];
+			GIW_Utils::log( sprintf( 'Image raw url = [%s]', $image_raw_url ) );
+
+			try {
+				$uploaded_image_id = media_sideload_image( $image_raw_url, $post_id, null, 'id' );
+
+				if(is_wp_error( $uploaded_image_id )){
+					GIW_Utils::log( 'Image failed sideload. Error: ' . $uploaded_image_id->get_error_message() );
+				}
+				else {
+					GIW_Utils::log( 'Image success sideload. Id = ' . $uploaded_image_id );
+
+					$uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
+					if(is_wp_error( $uploaded_image_url )){
+						GIW_Utils::log( 'Image failed upload. Error: ' . $uploaded_image_url->get_error_message() );
+					}
+
+					// Check if image is uploaded correctly and 
+					if( !empty( $uploaded_image_url ) ){
+
+						GIW_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
+
+						/*$uploaded_images[ $image_slug ] = array(
+								'url' => $uploaded_image_url,
+								'id' => $uploaded_image_id
+							);
+
+							if( !update_option( 'giw_uploaded_images', $uploaded_images ) ){
+								GIW_Utils::log( 'Updated uploaded images cache' );
+							}*/
+
+						$this->stats[ 'images' ][ 'uploaded' ][ $uploaded_image_id ] = $uploaded_image_url;
+
+						// Associate the uploaded image to the post
+						GIW_Utils::log( 'Associating uploaded image ' . $uploaded_image_id .' to post '. $post_id );
+						set_post_thumbnail( $post_id, $uploaded_image_id );
+
+					}else{
+						GIW_Utils::log( 'Image upload failed for some reason' . $uploaded_image_url->get_error_message() );
+					}
+				}
+			} catch (\Throwable $e) {
+				GIW_Utils::log( 'Unexpected exception. Error: ' . $e->getMessage() );
+			}
+		}
+
+
+
+
+        /*}
+
+        // Update the parsedown uploaded images array
+        $this->parsedown->uploaded_images = $uploaded_images;
+
+        return $uploaded_images;*/
 
     }
 
