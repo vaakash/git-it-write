@@ -183,6 +183,7 @@ class GIW_Publisher{
 
             // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
+	    $post_url = empty( $front_matter[ 'wp_url' ] ) ? $item_slug : $front_matter[ 'wp_url' ];
             $post_status = empty( $front_matter[ 'post_status' ] ) ? 'publish' : $front_matter[ 'post_status' ];
             $post_date = empty( $front_matter[ 'post_date' ] ) ? date(get_option('Y/m/d')) : $front_matter[ 'post_date' ];
 			$post_author = empty( $front_matter[ 'post_author' ] ) ? $this->post_author : $front_matter[ 'post_author' ];
@@ -197,8 +198,9 @@ class GIW_Publisher{
         }else{
 
             $post_title = $item_slug;
+	    $post_url = $item_slug
             $post_status = 'publish';
-			$post_author = $this->post_author;
+	    $post_author = $this->post_author;
             $post_excerpt = '';
             $menu_order = 0;
             $taxonomy = array();
@@ -221,8 +223,8 @@ class GIW_Publisher{
         $post_details = array(
             'ID' => $post_id,
             'post_title' => $post_title,
-            'post_name' => $item_slug,
-			'post_date' => $post_date,
+            'post_name' => $post_url,
+	    'post_date' => $post_date,
             'post_content' => $content,
             'post_type' => $this->post_type,
             'post_author' => $post_author,
