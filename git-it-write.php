@@ -10,7 +10,7 @@ GitHub Plugin URI: fullbright/git-it-write
 Primary Branch: master
 */
 
-define( 'GIW_VERSION', '1.3' );
+define( 'GIW_VERSION', '1.5' );
 define( 'GIW_PATH', plugin_dir_path( __FILE__ ) ); // All have trailing slash
 define( 'GIW_ADMIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) . 'admin' ) );
 
