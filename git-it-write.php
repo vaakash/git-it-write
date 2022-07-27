@@ -6,6 +6,8 @@ Description: Publish markdown files present in a Github repository as posts to W
 Author: Aakash Chakravarthy
 Author URI: https://www.aakashweb.com/
 Version: 1.3
+GitHub Plugin URI: fullbright/git-it-write
+Primary Branch: main
 */
 
 define( 'GIW_VERSION', '1.3' );
