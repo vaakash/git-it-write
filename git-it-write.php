@@ -7,7 +7,7 @@ Author: Aakash Chakravarthy
 Author URI: https://www.aakashweb.com/
 Version: 1.3
 GitHub Plugin URI: fullbright/git-it-write
-Primary Branch: main
+Primary Branch: master
 */
 
 define( 'GIW_VERSION', '1.3' );
