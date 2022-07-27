@@ -5,7 +5,7 @@ Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
 Description: Publish markdown files present in a Github repository as posts to WordPress automatically
 Author: Aakash Chakravarthy
 Author URI: https://www.aakashweb.com/
-Version: 1.3
+Version: 1.5
 GitHub Plugin URI: fullbright/git-it-write
 Primary Branch: master
 */
