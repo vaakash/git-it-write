@@ -198,7 +198,7 @@ class GIW_Publisher{
         }else{
 
             $post_title = $item_slug;
-	    $post_url = $item_slug
+	    $post_url = $item_slug;
             $post_status = 'publish';
 	    $post_author = $this->post_author;
             $post_excerpt = '';
