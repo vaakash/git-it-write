@@ -49,7 +49,7 @@ class GIW_Admin{
         
         if( $action != 'manage' ){
             echo '<p class="toolbar">';
-            echo '<a href="' . self::link() . '" class="button"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>';
+            echo '<a href="' . esc_url( self::link() ) . '" class="button"><span class="dashicons dashicons-arrow-left-alt"></span>Back</a>';
             self::toolbar_extra();
             echo '</p>';
         }
@@ -95,8 +95,8 @@ class GIW_Admin{
         $all_repos = Git_It_Write::all_repositories();
 
         echo '<p class="toolbar">';
-        echo '<a href="' . self::link( 'new' ) . '" class="button button-primary"><span class="dashicons dashicons-plus"></span> Add a new repository to publish posts from</a>';
-        echo '<a href="' . self::link( 'logs' ) . '" class="button"><span class="dashicons dashicons-text"></span> Logs</a>';
+        echo '<a href="' . esc_url( self::link( 'new' ) ) . '" class="button button-primary"><span class="dashicons dashicons-plus"></span> Add a new repository to publish posts from</a>';
+        echo '<a href="' . esc_url( self::link( 'logs' ) ) . '" class="button"><span class="dashicons dashicons-text"></span> Logs</a>';
         self::toolbar_extra();
         echo '</p>';
 
@@ -127,21 +127,21 @@ class GIW_Admin{
 
             echo '<tr>';
 
-            echo '<th>' . $id . '</th>';
+            echo '<th>' . esc_html( $id ) . '</th>';
 
             echo '<td class="title column-title has-row-actions column-primary page-title">';
-            echo '<a href="' . self::link( 'edit', $id ) . '" class="row-title">' . $config[ 'username' ] . '/' . $config[ 'repository' ] . '</a>';
+            echo '<a href="' . esc_url( self::link( 'edit', $id ) ) . '" class="row-title">' . esc_html( $config[ 'username' ] . '/' . $config[ 'repository' ] ) . '</a>';
             echo '<div class="row-actions">';
-            echo '<span><a href="' . self::link( 'edit', $id ) . '">Edit</a> | </span>';
-            echo '<span><a href="' . self::link( 'pull', $id ) . '">Pull posts</a> | </span>';
-            echo '<span class="trash"><a href="' . self::link( 'delete', $id, array( '_wpnonce' => wp_create_nonce( 'giw_delete_nonce' ) ) ) . '">Delete</a></span>';
+            echo '<span><a href="' . esc_url( self::link( 'edit', $id ) ) . '">Edit</a> | </span>';
+            echo '<span><a href="' . esc_url( self::link( 'pull', $id ) ) . '">Pull posts</a> | </span>';
+            echo '<span class="trash"><a href="' . esc_url( self::link( 'delete', $id, array( '_wpnonce' => wp_create_nonce( 'giw_delete_nonce' ) ) ) ) . '">Delete</a></span>';
             echo '</div>';
             '</td>';
 
-            echo '<td>' . ( empty( $config[ 'branch' ] ) ? 'master' : $config[ 'branch' ] ) . '</td>';
-            echo '<td>' . ( empty( $config[ 'folder' ] ) ? 'Root' : $config[ 'folder' ] ) . '</td>';
-            echo '<td>' . $config[ 'post_type' ] . '</td>';
-            echo '<td>' . ( $config[ 'last_publish' ] == 0 ? '-' : human_time_diff( $config[ 'last_publish' ] ) . ' ago' ) . '</td>';
+            echo '<td>' . ( empty( $config[ 'branch' ] ) ? 'master' : esc_html( $config[ 'branch' ] ) ) . '</td>';
+            echo '<td>' . ( empty( $config[ 'folder' ] ) ? 'Root' : esc_html( $config[ 'folder' ] ) ) . '</td>';
+            echo '<td>' . esc_html( $config[ 'post_type' ] ) . '</td>';
+            echo '<td>' . ( $config[ 'last_publish' ] == 0 ? '-' : esc_html( human_time_diff( $config[ 'last_publish' ] ) ) . ' ago' ) . '</td>';
 
             echo '</tr>';
         }
@@ -190,7 +190,7 @@ class GIW_Admin{
 
         }
 
-        echo '<h2>' . $page_title . '</h2>';
+        echo '<h2>' . esc_html( $page_title ) . '</h2>';
 
         echo '<form method="post">';
 
@@ -199,28 +199,28 @@ class GIW_Admin{
 
         echo '<tr>';
             echo '<td style="width: 300px">Github username/owner</td>';
-            echo '<td><input type="text" name="giw_username" value="' . $values[ 'username' ] . '" required="required" />';
+            echo '<td><input type="text" name="giw_username" value="' . esc_attr( $values[ 'username' ] ) . '" required="required" />';
             echo '<p class="description">The username of the Github repository</p>';
             echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Repository name</td>';
-            echo '<td><input type="text" name="giw_repository" value="' . $values[ 'repository' ] . '" required="required" />';
+            echo '<td><input type="text" name="giw_repository" value="' . esc_attr( $values[ 'repository' ] ) . '" required="required" />';
             echo '<p class="description">The name of the Github repository to pull and publish posts from</p>';
             echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Branch to publish from</td>';
-            echo '<td><input type="text"name="giw_branch" value="' . $values[ 'branch' ] . '" />';
+            echo '<td><input type="text"name="giw_branch" value="' . esc_attr( $values[ 'branch' ] ) . '" />';
             echo '<p class="description">The name of the repository branch to pull and publish posts from. Leave blank to default to "master". Example: main</p>';
             echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Folder to publish from</td>';
-            echo '<td><input type="text"name="giw_folder" value="' . $values[ 'folder' ] . '" />';
+            echo '<td><input type="text"name="giw_folder" value="' . esc_attr( $values[ 'folder' ] ) . '" />';
             echo '<p class="description">The folder in the repository from which posts have to be published. Leave blank to publish from the root of the repository. Example: website/main/docs</p>';
             echo '</td>';
         echo '</tr>';
@@ -254,11 +254,11 @@ class GIW_Admin{
         echo '</tbody>';
         echo '</table>';
 
-        echo '<input type="hidden" name="giw_id" value="' . $id . '" />';
+        echo '<input type="hidden" name="giw_id" value="' . esc_attr( $id ) . '" />';
 
         wp_nonce_field( 'giw_edit_nonce' );
 
-        echo '<p><button type="submit" class="button button-primary">' . $save_button . '</button></p>';
+        echo '<p><button type="submit" class="button button-primary">' . esc_html( $save_button ) . '</button></p>';
 
         echo '</form>';
 
@@ -302,17 +302,17 @@ class GIW_Admin{
 
         $id = $g[ 'id' ];
 
-        echo '<h2>Pull posts from Github for [' . $id . ']</h2>';
+        echo '<h2>Pull posts from Github for [' . esc_html( $id ) . ']</h2>';
 
         echo '<table class="widefat striped">';
         echo '<tbody>
         <tr>
             <th>To pull only the latest changes made to the repository and publish posts, select this option</td>
-            <td><a class="button" href="' . self::link( 'pull', $id, array( 'pull' => 'changes', '_wpnonce' => wp_create_nonce( 'giw_pull_nonce' ) ) ) . '">Pull only changes</a></td>
+            <td><a class="button" href="' . esc_url( self::link( 'pull', $id, array( 'pull' => 'changes', '_wpnonce' => wp_create_nonce( 'giw_pull_nonce' ) ) ) ) . '">Pull only changes</a></td>
         </tr>
         <tr>
             <th>To pull all the items even though unchanged and to overwrite all the published posts related to this repository, select this option</td>
-            <td><a class="button" href="' . self::link( 'pull', $id, array( 'pull' => 'force', '_wpnonce' => wp_create_nonce( 'giw_pull_nonce' ) ) ) . '">Pull all the files</a></td>
+            <td><a class="button" href="' . esc_url( self::link( 'pull', $id, array( 'pull' => 'force', '_wpnonce' => wp_create_nonce( 'giw_pull_nonce' ) ) ) ) . '">Pull all the files</a></td>
         </tr>
         </tbody>';
         echo '</table>';
@@ -333,7 +333,7 @@ class GIW_Admin{
             return;
         }
 
-        echo '<h2>Pulling posts [' . $g[ 'pull' ] . ']</h2>';
+        echo '<h2>Pulling posts [' . esc_html( $g[ 'pull' ] ) . ']</h2>';
 
         define( 'GIW_ON_GUI', true );
         if( $g[ 'pull' ] == 'force' ){
@@ -352,7 +352,7 @@ class GIW_Admin{
 
         $lines = GIW_Utils::read_log();
         foreach( $lines as $line ){
-            echo '<p>' . $line . '</p>';
+            echo '<p>' . esc_html( $line ) . '</p>';
         }
 
         echo '</div>';
@@ -374,8 +374,8 @@ class GIW_Admin{
 
         echo '<tr>';
             echo '<td style="width: 200px">Webhook secret</td>';
-            echo '<td><input type="password" class="webhook_secret" name="giw_webhook_secret" value="' . $values[ 'webhook_secret' ] . '" autocomplete="new-password" /> &nbsp;<button class="button">Toggle view</button>';
-            echo '<p class="description">Go to Github repository settings --> Webhook and add a webhook for the payload URL <code>' . rest_url( '/giw/v1/publish' ) . '</code> if you would like to automatically publish the changes whenever repository is updated.</p>';
+            echo '<td><input type="password" class="webhook_secret" name="giw_webhook_secret" value="' . esc_attr( $values[ 'webhook_secret' ] ) . '" autocomplete="new-password" /> &nbsp;<button class="button">Toggle view</button>';
+            echo '<p class="description">Go to Github repository settings --> Webhook and add a webhook for the payload URL <code>' . esc_html( rest_url( '/giw/v1/publish' ) ) . '</code> if you would like to automatically publish the changes whenever repository is updated.</p>';
             echo '<p class="description">Select content-type as <code>application/json</code> and enter a secret text. Provide the same secret text in the above field. Select "Just the push event" for the webhook trigger. Make sure all the repositories you would like to automatically update have the same payload URL and the secret.</p>';
             echo '</td>';
         echo '</tr>';
@@ -384,13 +384,13 @@ class GIW_Admin{
 
         echo '<tr>';
             echo '<td>Github Username</td>';
-            echo '<td><input type="text" name="giw_github_username" value="' . $values[ 'github_username' ] . '" />';
+            echo '<td><input type="text" name="giw_github_username" value="' . esc_attr( $values[ 'github_username' ] ) . '" />';
             echo '<p class="description">Your Github username for authenticating API calls.</p></td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Github Access token</td>';
-            echo '<td><input type="text" name="giw_github_access_token" value="' . $values[ 'github_access_token' ] . '" />';
+            echo '<td><input type="text" name="giw_github_access_token" value="' . esc_attr( $values[ 'github_access_token' ] ) . '" />';
             echo '<p class="description">Create an access token by following <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-token" target="_blank">the instructions here.</a> Select <code>repo -> public_repo</code> under scopes and generate a token.
             </p></td>';
         echo '</tr>';
@@ -478,7 +478,7 @@ class GIW_Admin{
         echo '<p>Get updates on the WordPress plugins, tips and tricks to enhance your WordPress experience. No spam.</p>';
 
     echo '<form class="subscribe_form" action="https://aakashweb.us19.list-manage.com/subscribe/post?u=b7023581458d048107298247e&amp;id=ef5ab3c5c4" method="post" name="mc-embedded-subscribe-form" target="_blank" novalidate>
-        <input type="email" value="' . get_option( 'admin_email' ) . '" name="EMAIL" class="required subscribe_email_box" id="mce-EMAIL" placeholder="Your email address">
+        <input type="text" value="' . esc_attr( get_option( 'admin_email' ) ) . '" name="EMAIL" class="required subscribe_email_box" id="mce-EMAIL" placeholder="Your email address">
         <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_b7023581458d048107298247e_ef5ab3c5c4" tabindex="-1" value=""></div>
         <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button subscribe_btn">
     </form>
@@ -527,7 +527,7 @@ class GIW_Admin{
     public static function print_notice( $msg = '', $type = 'success' ){
 
         if( $msg != '' ){
-            echo '<div class="notice notice-' . $type . ' is-dismissible"><p>' . $msg . '</p></div>';
+            echo '<div class="notice notice-' . esc_attr( $type ) . ' is-dismissible"><p>' . esc_html( $msg ) . '</p></div>';
         }
 
     }

@@ -57,7 +57,7 @@ class GIW_Publisher{
         $posts = get_posts(array(
             'post_type' => $this->post_type,
             'posts_per_page' => -1,
-            'post_status' => 'publish',
+            'post_status' => 'any',
             'post_parent' => $parent
         ));
 
@@ -135,7 +135,12 @@ class GIW_Publisher{
             $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
-            
+
+            $post_date = '';
+            if( !empty( $front_matter[ 'post_date' ] ) ){
+                $post_date = GIW_Utils::process_date( $front_matter[ 'post_date' ] );
+            }
+
             $sha = $item_props[ 'sha' ];
             $github_url = $item_props[ 'github_url' ];
 
@@ -144,6 +149,7 @@ class GIW_Publisher{
             $post_title = $item_slug;
             $post_status = 'publish';
             $post_excerpt = '';
+            $post_date = '';
             $menu_order = 0;
             $taxonomy = array();
             $custom_fields = array();
@@ -168,6 +174,7 @@ class GIW_Publisher{
             'post_status' => $post_status,
             'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
+            'post_date' => $post_date,
             'menu_order' => $menu_order,
             'meta_input' => $meta_input
         );
@@ -175,7 +182,7 @@ class GIW_Publisher{
         $new_post_id = wp_insert_post( $post_details );
 
         if( is_wp_error( $new_post_id ) || empty( $new_post_id ) ){
-            GIW_Utils::log( 'Failed to publish post - ' . $new_post_id->get_error_message() );
+            GIW_Utils::log( 'Failed to publish post - ' . $new_post_id );
             $this->stats[ 'posts' ][ 'failed' ]++;
             return false;
         }else{

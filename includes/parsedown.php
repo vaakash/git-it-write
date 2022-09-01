@@ -11,6 +11,7 @@ class GIW_Parsedown extends ParsedownExtra{
         'menu_order' => 0,
         'post_status' => 'publish',
         'post_excerpt' => '',
+        'post_date' => '',
         'taxonomy' => array(),
         'custom_fields' => array()
     );

@@ -38,7 +38,7 @@ class GIW_Shortcodes{
 
         $github_url = $meta[ 'github_url' ][0];
 
-        $link = '<a href="' . $github_url . '" class="giw-edit_link" target="_blank" rel="noreferrer noopener">' . $atts[ 'icon' ] . $atts[ 'text' ] . '</a>';
+        $link = '<a href="' . esc_url( $github_url ) . '" class="giw-edit_link" target="_blank" rel="noreferrer noopener">' . wp_kses_post( $atts[ 'icon' ] ) . esc_html( $atts[ 'text' ] ) . '</a>';
 
         if( $atts[ 'auto_p' ] ){
             return '<p>' . $link . '</p>';
