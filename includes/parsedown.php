@@ -57,8 +57,8 @@ class GIW_Parsedown extends ParsedownExtra{
         $first_character = substr( $href, 0, 1 );
         $prefix = '';
 
-        if( $first_character == '.' ){
-            $prefix = '../';
+        if( 1 || $first_character == '.' ){
+            $prefix = '../wp-content/uploads/';
         }
 
         // #2 - Remove .md file extension in relative URLs
