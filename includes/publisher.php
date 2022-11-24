@@ -133,6 +133,10 @@ class GIW_Publisher{
             $post_status = empty( $front_matter[ 'post_status' ] ) ? 'publish' : $front_matter[ 'post_status' ];
             $post_excerpt = empty( $front_matter[ 'post_excerpt' ] ) ? '' : $front_matter[ 'post_excerpt' ];
             $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
+            $page_template = empty( $front_matter[ 'page_template' ] ) ? '' : $front_matter[ 'page_template' ];
+            $comment_status = empty( $front_matter[ 'comment_status' ] ) ? '' : $front_matter[ 'comment_status' ];
+            $stick_post = empty( $front_matter[ 'stick_post' ] ) ? '' : $front_matter[ 'stick_post' ];
+            $skip_file = empty( $front_matter[ 'skip_file' ] ) ? '' : $front_matter[ 'skip_file' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
 
@@ -151,12 +155,21 @@ class GIW_Publisher{
             $post_excerpt = '';
             $post_date = '';
             $menu_order = 0;
+            $page_template = '';
+            $comment_status = '';
+            $stick_post = '';
+            $skip_file = '';
             $taxonomy = array();
             $custom_fields = array();
 
             $content = '';
             $sha = '';
             $github_url = '';
+        }
+
+        if( $skip_file == 'yes' ){
+            GIW_Utils::log( 'Skipping file [' . $item_props[ 'github_url' ] . '], skip_file option is set' );
+            return false;
         }
 
         $meta_input = array_merge( $custom_fields, array(
@@ -175,6 +188,8 @@ class GIW_Publisher{
             'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
             'post_date' => $post_date,
+            'page_template' => $page_template,
+            'comment_status' => $comment_status,
             'menu_order' => $menu_order,
             'meta_input' => $meta_input
         );
@@ -199,9 +214,19 @@ class GIW_Publisher{
 
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
-                        GIW_Utils::log( 'Failed to set taxonomy  [' . $set_tax->get_error_message() . ']' );
+                        GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
                     }
                 }
+            }
+
+            if( $stick_post == 'yes' ){
+                GIW_Utils::log( 'Marking post [' . $new_post_id . '] as sticky' );
+                stick_post( $new_post_id );
+            }
+
+            if( $stick_post == 'no' ){
+                GIW_Utils::log( 'Removing post [' . $new_post_id . '] as sticky' );
+                unstick_post( $new_post_id );
             }
 
             $stat_key = $new_post_id == $post_id ? 'updated' : 'new';
