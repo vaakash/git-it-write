@@ -323,11 +323,8 @@ class GIW_Publisher{
             GIW_Utils::log( 'Uploading image ' . $image_slug );
             GIW_Utils::log( $image_props );
 
-            // We cannot use WP media_sideload_image function for images at private GitHub repo
-            // $uploaded_image_id = media_sideload_image( $image_props[ 'raw_url' ], 0, null, 'id' );
-
             // So we use our patched version
-            $uploaded_image_id = $this->patched_media_sideload_image( $image_props, 0, null, 'id' );            
+            $uploaded_image_id = $this->upload_image( $image_props, 0, null, 'id' );
             $uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
 
             // Check if image is uploaded correctly and 
@@ -357,6 +354,87 @@ class GIW_Publisher{
 
         return $uploaded_images;
 
+    }
+
+    /**
+     * Uploads image from a URL. A modified version of `media_sideload_image` function 
+     * to honor authentication while fetching image data with GET from private repositories
+     */
+    public function upload_image( $image_props, $post_id = 0, $desc = null, $return_type = 'html' ) {
+
+        $file = $image_props['raw_url'];
+
+        if ( ! empty( $file ) ) {
+
+            $allowed_extensions = array( 'jpg', 'jpeg', 'jpe', 'png', 'gif', 'webp' );
+            $allowed_extensions = apply_filters( 'image_sideload_extensions', $allowed_extensions, $file );
+            $allowed_extensions = array_map( 'preg_quote', $allowed_extensions );
+
+            // Set variables for storage, fix file filename for query strings.
+            preg_match( '/[^\?]+\.(' . implode( '|', $allowed_extensions ) . ')\b/i', $file, $matches );
+    
+            if ( ! $matches ) {
+                return new WP_Error( 'image_sideload_failed', __( 'Invalid image URL.' ) );
+            }
+    
+            $file_array = array();
+            $file_array['name'] = wp_basename( $matches[0] );
+
+            $url_path = parse_url( $file, PHP_URL_PATH );
+            $url_filename = '';
+            if ( is_string( $url_path ) && '' !== $url_path ) {
+                $url_filename = basename( $url_path );
+            }
+
+            $temp_file_path = wp_tempnam( $url_filename );
+            if ( ! $temp_file_path ) {
+                return new WP_Error( 'http_no_file', __( 'Could not create temporary file.' ) );
+            }
+
+            $contents = $this->repository->get_item_content($image_props);
+            file_put_contents($temp_file_path, $contents);
+
+            // Download file to temp location.
+            $file_array['tmp_name'] = $temp_file_path;
+
+            // If error storing temporarily, return the error.
+            if ( is_wp_error( $file_array['tmp_name'] ) ) {
+                return $file_array['tmp_name'];
+            }
+    
+            // Loads the downloaded image file to the library. Temporary file is deleted here after upload.
+            $id = media_handle_sideload( $file_array, $post_id, $desc );
+    
+            // If error storing permanently, unlink.
+            if ( is_wp_error( $id ) ) {
+                @unlink( $file_array['tmp_name'] );
+                return $id;
+            }
+    
+            // Store the original attachment source in meta.
+            add_post_meta( $id, '_source_url', $file );
+    
+            // If attachment ID was requested, return it.
+            if ( 'id' === $return_type ) {
+                return $id;
+            }
+    
+            $src = wp_get_attachment_url( $id );
+        }
+    
+        // Finally, check to make sure the file has been saved, then return the HTML.
+        if ( ! empty( $src ) ) {
+            if ( 'src' === $return_type ) {
+                return $src;
+            }
+    
+            $alt = isset( $desc ) ? esc_attr( $desc ) : '';
+            $html = "<img src='$src' alt='$alt' />";
+    
+            return $html;
+        } else {
+            return new WP_Error( 'image_sideload_failed' );
+        }
     }
 
     public function publish(){
@@ -412,113 +490,6 @@ class GIW_Publisher{
 
     }
 
-    // Changed argument from $file to $image_prope props because we need them for download
-    private function patched_media_sideload_image( $image_props, $post_id = 0, $desc = null, $return_type = 'html' ) {
-        // >>> This is patched part >>>
-        $file = $image_props['raw_url'];
-        // <<< This is patched part <<< 
-
-        if ( ! empty( $file ) ) {
-    
-            $allowed_extensions = array( 'jpg', 'jpeg', 'jpe', 'png', 'gif', 'webp' );
-    
-            /**
-             * Filters the list of allowed file extensions when sideloading an image from a URL.
-             *
-             * The default allowed extensions are:
-             *
-             *  - `jpg`
-             *  - `jpeg`
-             *  - `jpe`
-             *  - `png`
-             *  - `gif`
-             *
-             * @since 5.6.0
-             *
-             * @param string[] $allowed_extensions Array of allowed file extensions.
-             * @param string   $file               The URL of the image to download.
-             */
-            $allowed_extensions = apply_filters( 'image_sideload_extensions', $allowed_extensions, $file );
-            $allowed_extensions = array_map( 'preg_quote', $allowed_extensions );
-    
-            // Set variables for storage, fix file filename for query strings.
-            preg_match( '/[^\?]+\.(' . implode( '|', $allowed_extensions ) . ')\b/i', $file, $matches );
-    
-            if ( ! $matches ) {
-                return new WP_Error( 'image_sideload_failed', __( 'Invalid image URL.' ) );
-            }
-    
-            $file_array         = array();
-            $file_array['name'] = wp_basename( $matches[0] );
-    
-
-
-            $url_path     = parse_url( $file, PHP_URL_PATH );
-            $url_filename = '';
-            if ( is_string( $url_path ) && '' !== $url_path ) {
-                $url_filename = basename( $url_path );
-            }
-        
-            $tmpfname = wp_tempnam( $url_filename );
-            if ( ! $tmpfname ) {
-                return new WP_Error( 'http_no_file', __( 'Could not create temporary file.' ) );
-            }
-
-            // >>> This is patched part >>>
-            $contents = $this->repository->get_item_content($image_props);
-            file_put_contents($tmpfname, $contents);            
-
-            // Download file to temp location.
-            $file_array['tmp_name'] = $tmpfname;
-            // <<< This is patched part <<<
-
-            /*
-            // >>> This is original 
-            // Download file to temp location.
-            $file_array['tmp_name'] = download_url( $file );            
-            // <<< This is original
-            */
-    
-            // If error storing temporarily, return the error.
-            if ( is_wp_error( $file_array['tmp_name'] ) ) {
-                return $file_array['tmp_name'];
-            }
-    
-            // Do the validation and storage stuff.
-            $id = media_handle_sideload( $file_array, $post_id, $desc );
-    
-            // If error storing permanently, unlink.
-            if ( is_wp_error( $id ) ) {
-                @unlink( $file_array['tmp_name'] );
-                return $id;
-            }
-    
-            // Store the original attachment source in meta.
-            add_post_meta( $id, '_source_url', $file );
-    
-            // If attachment ID was requested, return it.
-            if ( 'id' === $return_type ) {
-                return $id;
-            }
-    
-            $src = wp_get_attachment_url( $id );
-        }
-    
-        // Finally, check to make sure the file has been saved, then return the HTML.
-        if ( ! empty( $src ) ) {
-            if ( 'src' === $return_type ) {
-                return $src;
-            }
-    
-            $alt  = isset( $desc ) ? esc_attr( $desc ) : '';
-            $html = "<img src='$src' alt='$alt' />";
-    
-            return $html;
-        } else {
-            return new WP_Error( 'image_sideload_failed' );
-        }
-    }
-    
 }
 
 ?>

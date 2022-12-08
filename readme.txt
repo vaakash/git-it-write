@@ -140,6 +140,10 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 ## Changelog
 
+### 1.7 (dev)
+* Fix: Images were not uploaded for private repositories. (Thanks to https://github.com/lukaszpiotrluczak for the contribution)
+* Fix: Webhook publish request fails to upload images.
+
 ### 1.6
 * New: Options like comment status, page template, sticky post can now be set.
 * New: New option to skip file from being published.
