@@ -11,8 +11,13 @@ class GIW_Parsedown extends ParsedownExtra{
         'menu_order' => 0,
         'post_status' => 'publish',
         'post_excerpt' => '',
+        'post_date' => '',
+        'comment_status' => '',
+        'page_template' => '',
         'taxonomy' => array(),
-        'custom_fields' => array()
+        'custom_fields' => array(),
+        'stick_post' => '',
+        'skip_file' => ''
     );
 
     public $uploaded_images = array();

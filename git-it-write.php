@@ -53,7 +53,9 @@ final class Git_It_Write{
 
     public static function default_general_settings(){
         return array(
-            'webhook_secret' => ''
+            'webhook_secret' => '',
+            'github_username' => '',
+            'github_access_token' => ''
         );
     }
 

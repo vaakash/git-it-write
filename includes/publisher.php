@@ -63,7 +63,7 @@ class GIW_Publisher{
         $posts = get_posts(array(
             'post_type' => $this->post_type,
             'posts_per_page' => -1,
-            'post_status' => 'publish',
+            'post_status' => 'any',
             'post_parent' => $parent
         ));
 
@@ -189,9 +189,18 @@ class GIW_Publisher{
 			$post_author = empty( $front_matter[ 'post_author' ] ) ? $this->post_author : $front_matter[ 'post_author' ];
             $post_excerpt = empty( $front_matter[ 'post_excerpt' ] ) ? '' : $front_matter[ 'post_excerpt' ];
             $menu_order = empty( $front_matter[ 'menu_order' ] ) ? 0 : $front_matter[ 'menu_order' ];
+            $page_template = empty( $front_matter[ 'page_template' ] ) ? '' : $front_matter[ 'page_template' ];
+            $comment_status = empty( $front_matter[ 'comment_status' ] ) ? '' : $front_matter[ 'comment_status' ];
+            $stick_post = empty( $front_matter[ 'stick_post' ] ) ? '' : $front_matter[ 'stick_post' ];
+            $skip_file = empty( $front_matter[ 'skip_file' ] ) ? '' : $front_matter[ 'skip_file' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
-            
+
+            $post_date = '';
+            if( !empty( $front_matter[ 'post_date' ] ) ){
+                $post_date = GIW_Utils::process_date( $front_matter[ 'post_date' ] );
+            }
+
             $sha = $item_props[ 'sha' ];
             $github_url = $item_props[ 'github_url' ];
 
@@ -202,7 +211,12 @@ class GIW_Publisher{
             $post_status = 'publish';
 	    $post_author = $this->post_author;
             $post_excerpt = '';
+            $post_date = '';
             $menu_order = 0;
+            $page_template = '';
+            $comment_status = '';
+            $stick_post = '';
+            $skip_file = '';
             $taxonomy = array();
             $custom_fields = array();
 
@@ -211,13 +225,21 @@ class GIW_Publisher{
             $github_url = '';
         }
 
+
 		$item_slug_clean = sanitize_title( $item_slug );
-        $meta_input = array_merge( $custom_fields, array(
-            'sha' => $sha,
-            'github_url' => $github_url,
-			'item_slug' => $item_slug,
-			'item_slug_clean' => $item_slug_clean
-        ));
+    
+    if( $skip_file == 'yes' ){
+        GIW_Utils::log( 'Skipping file [' . $item_props[ 'github_url' ] . '], skip_file option is set' );
+        return false;
+    }
+
+    $meta_input = array_merge( $custom_fields, array(
+        'sha' => $sha,
+        'github_url' => $github_url,
+        'item_slug' => $item_slug,
+        'item_slug_clean' => $item_slug_clean
+    ));
+    
 		GIW_Utils::log( sprintf('Meta input to insert with post = [%s]', implode(',', $meta_input)) );
 
         $post_details = array(
@@ -231,6 +253,9 @@ class GIW_Publisher{
             'post_status' => $post_status,
             'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
+            'post_date' => $post_date,
+            'page_template' => $page_template,
+            'comment_status' => $comment_status,
             'menu_order' => $menu_order,
             'meta_input' => $meta_input
         );
@@ -239,7 +264,7 @@ class GIW_Publisher{
         $new_post_id = wp_insert_post( $post_details );
 
         if( is_wp_error( $new_post_id ) || empty( $new_post_id ) ){
-            GIW_Utils::log( 'Failed to publish post - ' . $new_post_id->get_error_message() );
+            GIW_Utils::log( 'Failed to publish post - ' . $new_post_id );
             $this->stats[ 'posts' ][ 'failed' ]++;
             return false;
         }else{
@@ -261,9 +286,19 @@ class GIW_Publisher{
 
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
-                        GIW_Utils::log( 'Failed to set taxonomy  [' . $set_tax->get_error_message() . ']' );
+                        GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
                     }
                 }
+            }
+
+            if( $stick_post == 'yes' ){
+                GIW_Utils::log( 'Marking post [' . $new_post_id . '] as sticky' );
+                stick_post( $new_post_id );
+            }
+
+            if( $stick_post == 'no' ){
+                GIW_Utils::log( 'Removing post [' . $new_post_id . '] as sticky' );
+                unstick_post( $new_post_id );
             }
 
             $stat_key = $new_post_id == $post_id ? 'updated' : 'new';
@@ -315,12 +350,12 @@ class GIW_Publisher{
 
                 $item_slug_clean = sanitize_title( $item_slug );
 				
-				GIW_Utils::log( sprintf('Looking for post slug (%s) in existing posts slug', $item_slug_clean));
-				//foreach ($existing_posts_slug as $post_key => $mArray){
-				//	GIW_Utils::log( sprintf(' Item %s = %s', $post_key, implode(",", $mArray)) );
-				//}
+                GIW_Utils::log( sprintf('Looking for post slug (%s) in existing posts slug', $item_slug_clean));
+                //foreach ($existing_posts_slug as $post_key => $mArray){
+                //	GIW_Utils::log( sprintf(' Item %s = %s', $post_key, implode(",", $mArray)) );
+                //}
                 $post_id = array_key_exists( $item_slug_clean, $existing_posts_slug ) ? $existing_posts_slug[ $item_slug_clean ][ 'id' ] : 0;
-				GIW_Utils::log( sprintf('Post Id found = %s, slug clean = %s', $post_id, $item_slug_clean) );
+				        GIW_Utils::log( sprintf('Post Id found = %s, slug clean = %s', $post_id, $item_slug_clean) );
 
                 $this->create_post( $post_id, $item_slug, $item_props, $parent );
 
@@ -380,48 +415,48 @@ class GIW_Publisher{
             GIW_Utils::log( 'Uploading image ' . $image_slug );
             GIW_Utils::log( $image_props );
 
-			$image_raw_url = $image_props[ 'raw_url' ];
-			//$image_raw_url = $image_props[ 'raw_url_private_repo' ];
-			GIW_Utils::log( sprintf( 'Image raw url = [%s]', $image_raw_url ) );
-			
-			try {
-				$uploaded_image_id = media_sideload_image( $image_raw_url, 0, null, 'id' );
-				
-				if(is_wp_error( $uploaded_image_id )){
-					GIW_Utils::log( 'Image failed sideload. Error: ' . $uploaded_image_id->get_error_message() );
-				}
-				else {
-					GIW_Utils::log( 'Image success sideload. Id = ' . $uploaded_image_id );
 
-					$uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
-					if(is_wp_error( $uploaded_image_url )){
-						GIW_Utils::log( 'Image failed upload. Error: ' . $uploaded_image_url->get_error_message() );
-					}
+            $image_raw_url = $image_props[ 'raw_url' ];
+            //$image_raw_url = $image_props[ 'raw_url_private_repo' ];
+            GIW_Utils::log( sprintf( 'Image raw url = [%s]', $image_raw_url ) );
 
-					// Check if image is uploaded correctly and 
-					if( !empty( $uploaded_image_url ) ){
+            try {
+              $uploaded_image_id = media_sideload_image( $image_raw_url, 0, null, 'id' );
 
-						GIW_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
+              if(is_wp_error( $uploaded_image_id )){
+                GIW_Utils::log( 'Image failed sideload. Error: ' . $uploaded_image_id->get_error_message() );
+              }
+              else {
+                GIW_Utils::log( 'Image success sideload. Id = ' . $uploaded_image_id );
 
-						$uploaded_images[ $image_slug ] = array(
-							'url' => $uploaded_image_url,
-							'id' => $uploaded_image_id
-						);
+                $uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
+                if(is_wp_error( $uploaded_image_url )){
+                  GIW_Utils::log( 'Image failed upload. Error: ' . $uploaded_image_url->get_error_message() );
+                }
 
-						if( !update_option( 'giw_uploaded_images', $uploaded_images ) ){
-							GIW_Utils::log( 'Updated uploaded images cache' );
-						}
+                // Check if image is uploaded correctly and 
+                if( !empty( $uploaded_image_url ) ){
 
-						$this->stats[ 'images' ][ 'uploaded' ][ $uploaded_image_id ] = $uploaded_image_url;
+                  GIW_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
 
-					}else{
-						GIW_Utils::log( 'Image upload failed for some reason' . $uploaded_image_url->get_error_message() );
-					}
-				}
-			} catch (\Throwable $e) {
-				GIW_Utils::log( 'Unexpected exception. Error: ' . $e->getMessage() );
-			}
-			
+                  $uploaded_images[ $image_slug ] = array(
+                    'url' => $uploaded_image_url,
+                    'id' => $uploaded_image_id
+                  );
+
+                  if( !update_option( 'giw_uploaded_images', $uploaded_images ) ){
+                    GIW_Utils::log( 'Updated uploaded images cache' );
+                  }
+
+                  $this->stats[ 'images' ][ 'uploaded' ][ $uploaded_image_id ] = $uploaded_image_url;
+
+                }else{
+                  GIW_Utils::log( 'Image upload failed for some reason' . $uploaded_image_url->get_error_message() );
+                }
+              }
+            } catch (\Throwable $e) {
+              GIW_Utils::log( 'Unexpected exception. Error: ' . $e->getMessage() );
+            }
 
         }
 
@@ -499,6 +534,87 @@ class GIW_Publisher{
 
         return $uploaded_images;*/
 
+    }
+
+    /**
+     * Uploads image from a URL. A modified version of `media_sideload_image` function 
+     * to honor authentication while fetching image data with GET from private repositories
+     */
+    public function upload_image( $image_props, $post_id = 0, $desc = null, $return_type = 'html' ) {
+
+        $file = $image_props['raw_url'];
+
+        if ( ! empty( $file ) ) {
+
+            $allowed_extensions = array( 'jpg', 'jpeg', 'jpe', 'png', 'gif', 'webp' );
+            $allowed_extensions = apply_filters( 'image_sideload_extensions', $allowed_extensions, $file );
+            $allowed_extensions = array_map( 'preg_quote', $allowed_extensions );
+
+            // Set variables for storage, fix file filename for query strings.
+            preg_match( '/[^\?]+\.(' . implode( '|', $allowed_extensions ) . ')\b/i', $file, $matches );
+    
+            if ( ! $matches ) {
+                return new WP_Error( 'image_sideload_failed', __( 'Invalid image URL.' ) );
+            }
+    
+            $file_array = array();
+            $file_array['name'] = wp_basename( $matches[0] );
+
+            $url_path = parse_url( $file, PHP_URL_PATH );
+            $url_filename = '';
+            if ( is_string( $url_path ) && '' !== $url_path ) {
+                $url_filename = basename( $url_path );
+            }
+
+            $temp_file_path = wp_tempnam( $url_filename );
+            if ( ! $temp_file_path ) {
+                return new WP_Error( 'http_no_file', __( 'Could not create temporary file.' ) );
+            }
+
+            $contents = $this->repository->get_item_content($image_props);
+            file_put_contents($temp_file_path, $contents);
+
+            // Download file to temp location.
+            $file_array['tmp_name'] = $temp_file_path;
+
+            // If error storing temporarily, return the error.
+            if ( is_wp_error( $file_array['tmp_name'] ) ) {
+                return $file_array['tmp_name'];
+            }
+    
+            // Loads the downloaded image file to the library. Temporary file is deleted here after upload.
+            $id = media_handle_sideload( $file_array, $post_id, $desc );
+    
+            // If error storing permanently, unlink.
+            if ( is_wp_error( $id ) ) {
+                @unlink( $file_array['tmp_name'] );
+                return $id;
+            }
+    
+            // Store the original attachment source in meta.
+            add_post_meta( $id, '_source_url', $file );
+    
+            // If attachment ID was requested, return it.
+            if ( 'id' === $return_type ) {
+                return $id;
+            }
+    
+            $src = wp_get_attachment_url( $id );
+        }
+    
+        // Finally, check to make sure the file has been saved, then return the HTML.
+        if ( ! empty( $src ) ) {
+            if ( 'src' === $return_type ) {
+                return $src;
+            }
+    
+            $alt = isset( $desc ) ? esc_attr( $desc ) : '';
+            $html = "<img src='$src' alt='$alt' />";
+    
+            return $html;
+        } else {
+            return new WP_Error( 'image_sideload_failed' );
+        }
     }
 
     public function publish(){

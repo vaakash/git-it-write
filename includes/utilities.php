@@ -151,11 +151,11 @@ class GIW_Utils{
     public static function select_field( $list, $name, $selected ){
 
         $field_html = '';
-        $field_html .= "<select name='$name' required='required'>";
+        $field_html .= '<select name="' . esc_attr( $name ) . '" required="required">';
         foreach( $list as $k => $v ){
-            $field_html .= "<option value='$k' " . selected( $selected, $k, false ) . ">$v</option>";
+            $field_html .= '<option value="' . esc_attr( $k ) . '" ' . selected( $selected, $k, false ) . '>' . esc_html( $v ) . '</option>';
         }
-        $field_html .= "</select>";
+        $field_html .= '</select>';
         
         return $field_html;
 
@@ -182,6 +182,22 @@ class GIW_Utils{
         }
 
         return self::select_field( $result, $name, $selected );
+
+    }
+
+    public static function process_date( $date ){
+
+        $date = trim( $date );
+        if( empty( $date ) ){
+            return '';
+        }
+
+        // If date is a timestamp then convert it to formatted time
+        if( is_numeric( $date ) && (int)$date == $date ){
+            $date = date( 'Y-m-d H:i:s', $date );
+        }
+
+        return $date;
 
     }
 

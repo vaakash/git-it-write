@@ -69,6 +69,11 @@ class GIW_Webhook{
             return self::error( 'invalid_data', 'Invalid data', array( 'status' => 400 ) );
         }
 
+        // Load media related WP files to upload images when in REST API mode
+        require_once( ABSPATH . 'wp-admin/includes/media.php' );
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
         $repo_full_name = $json[ 'repository' ][ 'full_name' ];
 
         $result = GIW_Publish_Handler::publish_by_repo_full_name( $repo_full_name );
