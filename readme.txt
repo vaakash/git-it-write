@@ -4,7 +4,7 @@ Author URI: https://www.aakashweb.com/
 Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
 Tags: github, markdown, editor, publish, posts, wordpress, import, custom post types
 Donate link: https://www.paypal.me/vaakash/
-License: GPLv3
+License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
 Tested up to: 6.1.1
