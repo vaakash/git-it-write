@@ -82,6 +82,7 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 ## Installation
 
 1. Extract the zipped file and upload the folder `git-it-write` to to `/wp-content/plugins/` directory.
+1. Run composer to generate vendor directory, e.g. with `composer install --optimize-autoloader --no-dev`
 1. Activate the plugin through the `Plugins` menu in WordPress.
 1. Open the admin page from the "Git it Write" link under the settings menu.
 

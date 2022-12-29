@@ -4,7 +4,7 @@ Author URI: https://www.aakashweb.com/
 Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
 Tags: github, markdown, editor, publish, posts, wordpress, import, custom post types
 Donate link: https://www.paypal.me/vaakash/
-License: GPLv2 or later
+License: GPLv3
 Requires PHP: 5.3
 Requires at least: 4.4
 Tested up to: 6.1.1
@@ -97,6 +97,7 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 ## Installation
 
 1. Extract the zipped file and upload the folder `git-it-write` to to `/wp-content/plugins/` directory.
+1. Run composer to generate vendor directory, e.g. with `composer install --optimize-autoloader --no-dev`
 1. Activate the plugin through the `Plugins` menu in WordPress.
 1. Open the admin page from the "Git it Write" link under the settings menu.
 
