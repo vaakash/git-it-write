@@ -8,6 +8,8 @@ This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `G
 
 📦 **Download/Install:** [Git it write](https://wordpress.org/plugins/git-it-write/) on WordPress plugin repository
 
+⚡ **Getting started:** [Get started](https://www.aakashweb.com/docs/git-it-write/getting-started/) with Git it write. Learn how to write `.md` files and publish posts on WordPress.
+
 This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
 
 If a repository has files in the below structure,
