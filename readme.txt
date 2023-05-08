@@ -7,8 +7,8 @@ Donate link: https://www.paypal.me/vaakash/
 License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
-Tested up to: 6.1.1
-Stable tag: 1.6
+Tested up to: 6.2
+Stable tag: 1.7
 
 Publish markdown files present in a Github repository as posts to WordPress automatically
 
@@ -140,7 +140,11 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 ## Changelog
 
-### 1.7 (dev)
+### 1.7
+* New: Images (`_images`) can be now organized in folders.
+* New: Featured image can now be set to posts.
+* New: Markdown images are now wrapped with `figure` tag and added support for image caption.
+* New: Image tags now have class attributes similar to WordPress editor.
 * Fix: Images were not uploaded for private repositories. (Thanks to https://github.com/lukaszpiotrluczak for the contribution)
 * Fix: Webhook publish request fails to upload images.
 

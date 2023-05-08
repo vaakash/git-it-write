@@ -16,6 +16,10 @@ class GIW_Publisher{
 
     public $content_template;
 
+    public $uploaded_images;
+
+    public $parsedown;
+
     public $stats = array(
         'posts' => array(
             'new' => array(),
@@ -44,8 +48,10 @@ class GIW_Publisher{
         $this->post_author = $repo_config[ 'post_author' ];
         $this->content_template = $repo_config[ 'content_template' ];
 
+        $this->uploaded_images = GIW_Utils::get_uploaded_images();
+
         $this->parsedown = new GIW_Parsedown();
-        $this->parsedown->uploaded_images = get_option( 'giw_uploaded_images', array() );
+        $this->parsedown->uploaded_images = $this->uploaded_images;
 
         $this->allowed_file_types = Git_It_Write::allowed_file_types();
 
@@ -143,6 +149,15 @@ class GIW_Publisher{
             $post_date = '';
             if( !empty( $front_matter[ 'post_date' ] ) ){
                 $post_date = GIW_Utils::process_date( $front_matter[ 'post_date' ] );
+            }
+
+            if( !empty( $front_matter[ 'featured_image' ] ) && !array_key_exists( '_thumbnail_id', $custom_fields ) ){
+                $ft_image_path = trim( $front_matter[ 'featured_image' ] );
+                $ft_image_path = ltrim( $ft_image_path, '/' );
+                GIW_Utils::log( 'Featured image for the post [' . $ft_image_path . ']' );
+                if( array_key_exists( $ft_image_path, $this->uploaded_images ) ){
+                    $custom_fields[ '_thumbnail_id' ] = $this->uploaded_images[ $ft_image_path ][ 'id' ];
+                }
             }
 
             $sha = $item_props[ 'sha' ];
@@ -303,7 +318,7 @@ class GIW_Publisher{
 
     public function upload_images(){
 
-        $uploaded_images = get_option( 'giw_uploaded_images', array() );
+        $uploaded_images = GIW_Utils::get_uploaded_images();
 
         if( !isset( $this->repository->structure[ '_images' ] ) || $this->repository->structure[ '_images' ][ 'type' ] != 'directory' ){
             GIW_Utils::log( 'No images directory in repository. Exiting' );
@@ -313,47 +328,69 @@ class GIW_Publisher{
         $images_dir = $this->repository->structure[ '_images' ];
         $images = $images_dir[ 'items' ];
 
+        $this->upload_images_recursive( $images, $uploaded_images );
+
+        // Update the uploaded images cache
+        $this->uploaded_images = $uploaded_images;
+        $this->parsedown->uploaded_images = $uploaded_images;
+
+        return $uploaded_images;
+
+    }
+
+    public function upload_images_recursive( $images, &$uploaded_images ){
+
         foreach( $images as $image_slug => $image_props ){
-            GIW_Utils::log( 'Starting image ' . $image_slug );
-            if( array_key_exists( $image_slug, $uploaded_images ) ){
-                GIW_Utils::log( $image_slug . ' is already uploaded' );
+
+            if( $image_props[ 'type' ] == 'directory' ){
+                $sub_images_dir = $image_props[ 'items' ];
+                GIW_Utils::log( $image_slug . ' is an images folder' );
+                $this->upload_images_recursive( $sub_images_dir, $uploaded_images );
                 continue;
             }
 
-            GIW_Utils::log( 'Uploading image ' . $image_slug );
-            GIW_Utils::log( $image_props );
+            $image_path = $image_props[ 'rel_url' ];
+
+            GIW_Utils::log( 'Starting image ' . $image_path );
+            if( array_key_exists( $image_path, $uploaded_images ) && !is_null( get_post( $uploaded_images[ $image_path ][ 'id' ] ) ) ){
+                GIW_Utils::log( $image_path . ' is already uploaded' );
+                continue;
+            }
+
+            GIW_Utils::log( 'Uploading image ' . $image_path );
 
             // So we use our patched version
             $uploaded_image_id = $this->upload_image( $image_props, 0, null, 'id' );
+
+            if( is_wp_error( $uploaded_image_id ) ){
+                GIW_Utils::log( 'Failed to upload image. Error [' . $uploaded_image_id->get_error_message() . ']' );
+                continue;
+            }
+
             $uploaded_image_url = wp_get_attachment_url( $uploaded_image_id );
 
             // Check if image is uploaded correctly and 
             if( !empty( $uploaded_image_url ) ){
 
-                GIW_Utils::log( 'Image is uploaded ' . $uploaded_image_url . ' ' . $uploaded_image_id );
+                GIW_Utils::log( 'Image is uploaded [' . $uploaded_image_url . ']. ID: ' . $uploaded_image_id );
 
-                $uploaded_images[ $image_slug ] = array(
+                $uploaded_images[ $image_path ] = array(
                     'url' => $uploaded_image_url,
                     'id' => $uploaded_image_id
                 );
 
                 if( !update_option( 'giw_uploaded_images', $uploaded_images ) ){
-                    GIW_Utils::log( 'Updated uploaded images cache' );
+                    GIW_Utils::log( 'Failed to update uploaded images cache' );
                 }
 
                 $this->stats[ 'images' ][ 'uploaded' ][ $uploaded_image_id ] = $uploaded_image_url;
 
             }else{
-                GIW_Utils::log( 'Image upload failed for some reason' );
+                GIW_Utils::log( 'Failed to the uploaded attachment image URL' );
             }
 
         }
-
-        // Update the parsedown uploaded images array
-        $this->parsedown->uploaded_images = $uploaded_images;
-
-        return $uploaded_images;
-
+        
     }
 
     /**
@@ -372,9 +409,9 @@ class GIW_Publisher{
 
             // Set variables for storage, fix file filename for query strings.
             preg_match( '/[^\?]+\.(' . implode( '|', $allowed_extensions ) . ')\b/i', $file, $matches );
-    
+
             if ( ! $matches ) {
-                return new WP_Error( 'image_sideload_failed', __( 'Invalid image URL.' ) );
+                return new WP_Error( 'image_sideload_failed', __( 'Unsupported image format.' ) );
             }
     
             $file_array = array();

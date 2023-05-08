@@ -88,6 +88,7 @@ class GIW_Repository{
                 'type' => 'file',
                 'raw_url' => $this->raw_url( $item->path ),
                 'github_url' => $this->github_url( $item->path ),
+                'rel_url' => $item->path,
                 'sha' => $item->sha,
                 'file_type' => strtolower( $extension )
             );
@@ -124,7 +125,7 @@ class GIW_Repository{
         }
 
         if( !property_exists( $data, 'tree' ) ){
-            GIW_Utils::log( 'Repository not found on Github! ['. $tree_url .']' );
+            GIW_Utils::log( 'Repository not found on Github! ['. $tree_url .']. Error message [' . ( property_exists( $data, 'message' ) ? $data->message : '' ) . ']' );
             return false;
         }
 

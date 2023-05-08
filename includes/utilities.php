@@ -201,6 +201,40 @@ class GIW_Utils{
 
     }
 
+    public static function get_uploaded_images(){
+
+        $metadata = get_option( 'giw_metadata', array() );
+
+        /**
+         * Check and standardize old style keys where only image file name without file extension was used.
+         * If the key does not contain the full relative image path like /_images/flower.png
+         * then generate it and modify
+         */
+        if( !array_key_exists( 'fix_uploaded_images_key', $metadata ) ){
+            $uploaded_images = get_option( 'giw_uploaded_images', array() );
+            foreach( $uploaded_images as $key => $props ){
+                if( strpos( $key, '_images' ) !== false ){
+                    continue; // Expected key name, no need to modify
+                }
+                $url_parts = explode( '.', $props[ 'url' ] );
+                $extension = end( $url_parts );
+                if( !in_array( $extension, array( 'jpg', 'jpeg', 'jpe', 'png', 'gif', 'webp' ) ) ){
+                    continue; // Unable to get extension for the file, skipping.
+                }
+                $new_key = '_images/' . $key . '.' . $extension; // Git relative path does not start with slash
+                unset( $uploaded_images[ $key ] );
+                $uploaded_images[ $new_key ] = $props;
+            }
+            update_option( 'giw_uploaded_images', $uploaded_images );
+            
+            $metadata[ 'fix_uploaded_images_key' ] = 'root_dir';
+            update_option( 'giw_metadata', $metadata );
+        }
+
+        return get_option( 'giw_uploaded_images', array() );
+
+    }
+
 }
 
 ?>
