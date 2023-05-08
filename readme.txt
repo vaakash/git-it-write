@@ -20,17 +20,19 @@ Git it Write allows to publish the markdown files present in a Github repository
 
 This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `Gatsby.js` on how content is written is markdown. This is a similar idea for WordPress where markdown files are parsed from Github and published as posts.
 
-**Live example:** [Source github repository](https://github.com/vaakash/aakash-web) (`/docs/` folder) to [Posts published](https://www.aakashweb.com/docs/)
+👓 **Live example:** [Source github repository](https://github.com/vaakash/aakash-web) (`/docs/` folder) to [Posts published](https://www.aakashweb.com/docs/)
+
+⚡ **Getting started:** [Get started](https://www.aakashweb.com/docs/git-it-write/getting-started/) with Git it write. Learn how to write `.md` files and publish posts on WordPress.
 
 This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
 
 If a repository has files in the below structure,
 
-    docs\
-        guide\
+    docs/
+        guide/
             introduction.md
             getting-started.md
-    help\
+    help/
         faq.md
 
 Then below posts will be created like below (if permalinks are configured and the post type supports "hierarchy" i.e creating posts level by level (example: pages))
