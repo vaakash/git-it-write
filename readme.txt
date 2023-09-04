@@ -7,7 +7,7 @@ Donate link: https://www.paypal.me/vaakash/
 License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
-Tested up to: 6.2
+Tested up to: 6.3.1
 Stable tag: 1.7
 
 Publish markdown files present in a Github repository as posts to WordPress automatically
