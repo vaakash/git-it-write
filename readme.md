@@ -13,9 +13,12 @@ This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `G
 
 This allows people to collaborate with the post, share edits and suggestions in GitHub which when pulled the WordPress post will be updated automatically.
 
-This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
+### 🖥️ Example
 
-If a repository has files in the below structure,
+If a repository has files in the below structure, then below posts will be created (if permalinks are configured and 
+the post type supports "hierarchy" i.e. creating posts level by level, like `/pages` in the example below).
+
+**File structure in the GitHub repository:**
 
     docs\
         guide\
@@ -24,7 +27,7 @@ If a repository has files in the below structure,
     help\
         faq.md
 
-Then below posts will be created like below (if permalinks are configured and the post type supports "hierarchy" i.e creating posts level by level (example: pages))
+ **Generated web sides:**
 
     https://example.com/docs/guide/introduction/
     https://example.com/docs/guide/getting-started/
