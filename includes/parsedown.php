@@ -131,6 +131,25 @@ class GIW_Parsedown extends ParsedownExtra{
 
     }
 
+    // Overriding the default function to not replace the double quotes with &quot; for shortcodes
+    protected function inlineSpecialCharacter($Excerpt){
+        if ($Excerpt['text'][0] === '&' and ! preg_match('/^&#?\w+;/', $Excerpt['text'])){
+            return array(
+                'markup' => '&amp;',
+                'extent' => 1,
+            );
+        }
+
+        $SpecialCharacter = array('>' => 'gt', '<' => 'lt');
+
+        if (isset($SpecialCharacter[$Excerpt['text'][0]])){
+            return array(
+                'markup' => '&'.$SpecialCharacter[$Excerpt['text'][0]].';',
+                'extent' => 1,
+            );
+        }
+    }
+
     // Wraps the image with figure tag and adds caption. Thanks to https://gist.github.com/kantoniak/b1a5c7889e5583824487dc78d93da7cd
     public function blockFigure( $Line ) {
 
