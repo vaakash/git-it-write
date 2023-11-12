@@ -1,12 +1,13 @@
 (function($){
     $(document).ready(function(){
-        var $wh_secret = $(".webhook_secret");
-        $wh_secret.next().click(function(e){
+        var $secret_input = $('input[type="password"]');
+        $secret_input.next().click(function(e){
             e.preventDefault();
-            if($wh_secret.attr("type") == "text"){
-                $wh_secret.attr("type", "password");
+            var $the_input = $(this).prev();
+            if($the_input.attr('type') == 'text'){
+                $the_input.attr('type', 'password');
             }else{
-                $wh_secret.attr("type", "text");
+                $the_input.attr('type', 'text');
             }
         });
     });

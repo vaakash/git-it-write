@@ -1,4 +1,4 @@
-# Git it Write - Write posts from Github
+# Git it Write - Write posts from GitHub
 Contributors: vaakash
 Author URI: https://www.aakashweb.com/
 Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
@@ -10,21 +10,21 @@ Requires at least: 4.4
 Tested up to: 6.4.1
 Stable tag: 1.8
 
-Publish markdown files present in a Github repository as posts to WordPress automatically
+Publish markdown files present in a GitHub repository as posts to WordPress automatically
 
 
 
 ## Description
 
-Git it Write allows to publish the markdown files present in a Github repository to your WordPress site. So with this plugin, whenever the files are added, updated in the repository the WordPress post will be added, updated accordingly.
+Git it Write allows to publish the markdown files present in a GitHub repository to your WordPress site. So with this plugin, whenever the files are added, updated in the repository the WordPress post will be added, updated accordingly.
 
-This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `Gatsby.js` on how content is written is markdown. This is a similar idea for WordPress where markdown files are parsed from Github and published as posts.
+This plugin is inspired from static site generators like `Jekyll`, `Next.js`, `Gatsby.js` on how content is written is markdown. This is a similar idea for WordPress where markdown files are parsed from GitHub and published as posts.
 
 👓 **Live example:** [Source github repository](https://github.com/vaakash/aakash-web) (`/docs/` folder) to [Posts published](https://www.aakashweb.com/docs/)
 
 ⚡ **Getting started:** [Get started](https://www.aakashweb.com/docs/git-it-write/getting-started/) with Git it write. Learn how to write `.md` files and publish posts on WordPress.
 
-This allows people to collaborate with the post, share edits and suggestions in Github which when pulled the WordPress post will be updated automatically.
+This allows people to collaborate with the post, share edits and suggestions in GitHub which when pulled the WordPress post will be updated automatically.
 
 If a repository has files in the below structure,
 
@@ -43,10 +43,10 @@ Then below posts will be created like below (if permalinks are configured and th
 
 ### 🎲 What is the use of this plugin ?
 
-* Publish posts using the files in your Github repository.
+* Publish posts using the files in your GitHub repository.
 * Write your posts in Markdown format.
 * Write your posts on your desktop application (Notepad++, Sublime Text, Visual studio code).
-* Collaborate, involve communities on the files in Github and publish them on WordPress.
+* Collaborate, involve communities on the files in GitHub and publish them on WordPress.
 * All the advantages of Git and it's version management system.
 
 ### 🚀 Some use cases
@@ -70,7 +70,7 @@ Then below posts will be created like below (if permalinks are configured and th
 ### ℹ Note
 
 * Only Markdown files will be pulled and published right now
-* Posts won't be deleted when it's source file is deleted on Github.
+* Posts won't be deleted when it's source file is deleted on GitHub.
 * It is preferred to have a permalink structure.
 * It is preferred to select a post type which supports hierarchy.
 * Images have to present only in `_images` folder in the repository root. Markdown files have to relatively use them in the file.
@@ -81,7 +81,7 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 
 ### 🏃‍♂️ Using the plugin
 
-1. Have a Github repository where all the source files (markdown files) are maintained (organized in folders if needed the exact structure)
+1. Have a GitHub repository where all the source files (markdown files) are maintained (organized in folders if needed the exact structure)
 1. In the plugin settings page, click add a new repository.
 1. Enter the details of the repository to pull the posts from and under what post type to publish them.
 1. Save the settings
@@ -93,7 +93,7 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 * [Documentation](https://www.aakashweb.com/docs/git-it-write/)
 * [Support forum/Report bugs](https://www.aakashweb.com/forum/)
 * [Donate](https://www.paypal.me/vaakash/)
-* [Contribute on Github](https://github.com/vaakash/git-it-write)
+* [Contribute on GitHub](https://github.com/vaakash/git-it-write)
 
 
 ## Installation
@@ -108,9 +108,9 @@ It is recommended that a permalink structure is enabled in the WordPress site so
 
 Please visit the [plugin documentation page](https://www.aakashweb.com/docs/git-it-write/) for complete list of FAQs.
 
-### When a post is edited in WordPress will that update the file in the Github repository ?
+### When a post is edited in WordPress will that update the file in the GitHub repository ?
 
-No. This plugin won't sync post content. It is a one way update. Only changes made to the Github repository will update the posts and not otherwise.
+No. This plugin won't sync post content. It is a one way update. Only changes made to the GitHub repository will update the posts and not otherwise.
 
 ### What all files in the repository will be published ?
 
@@ -131,8 +131,8 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 ## Screenshots
 
-1. Your files in a Github repository
-2. Posts pulled and published from Github.
+1. Your files in a GitHub repository
+2. Posts pulled and published from GitHub.
 3. Content of the published post.
 4. Published post.
 5. Plugin admin page.
@@ -141,6 +141,12 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 
 ## Changelog
+
+### 1.8
+* New: Error message during HTTP get/post is now logged.
+* Fix: Double quotes in WordPress shortcodes are escaped.
+* Fix: GitHub access token field in admin form is converted to a password field.
+* Fix: Typos in readme and admin page.
 
 ### 1.7
 * New: Images (`_images`) can be now organized in folders.
@@ -159,7 +165,7 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 * Fix: Enhancements to data escaping in the admin page.
 
 ### 1.4
-* Fix: Repository not found issue by adding Github authentication.
+* Fix: Repository not found issue by adding GitHub authentication.
 * Fix: Duplicate posts when filename has special characters.
 * Fix: PHP warning when directory has no index.md file.
 

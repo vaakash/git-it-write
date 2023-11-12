@@ -39,6 +39,7 @@ class GIW_Repository{
         $response = wp_remote_get( $url, $args );
 
         if( is_wp_error( $response ) ) {
+            GIW_Utils::log( 'Error: ' . $response->get_error_message() );
             return false;
         }
 

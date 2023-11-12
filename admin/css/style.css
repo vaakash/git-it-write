@@ -72,12 +72,12 @@ table.widefat td {
     margin-bottom: 15px;
     background-size: 95px;
     background-color: #fff;
-    border: 1px solid #dfdfdf;
+    border: 1px solid #c3c4c7;
 }
 .side_card h2 {
     margin: -20px -20px 20px -20px;
     padding: 12.5px 15px;
-    border-bottom: 1px solid #dfdfdf;
+    border-bottom: 1px solid #c3c4c7;
     font-size: 1.2em;
 }
 .side_card h2 .dashicons {
@@ -147,12 +147,12 @@ table.widefat td {
     margin-bottom: 0;
 }
 .twitter_btn.button{
-    background: #1b95e0;
+    background: #000;
     color: #fff;
     border-color: transparent;
 }
 .facebook_btn.button{
-    background: #4080ff;
+    background: #0866ff;
     color: #fff;
     border-color: transparent;
 }

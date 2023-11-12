@@ -198,16 +198,16 @@ class GIW_Admin{
         echo '<tbody>';
 
         echo '<tr>';
-            echo '<td style="width: 300px">Github username/owner</td>';
+            echo '<td style="width: 300px">GitHub username/owner</td>';
             echo '<td><input type="text" name="giw_username" value="' . esc_attr( $values[ 'username' ] ) . '" required="required" />';
-            echo '<p class="description">The username of the Github repository</p>';
+            echo '<p class="description">The username of the GitHub repository</p>';
             echo '</td>';
         echo '</tr>';
 
         echo '<tr>';
             echo '<td>Repository name</td>';
             echo '<td><input type="text" name="giw_repository" value="' . esc_attr( $values[ 'repository' ] ) . '" required="required" />';
-            echo '<p class="description">The name of the Github repository to pull and publish posts from</p>';
+            echo '<p class="description">The name of the GitHub repository to pull and publish posts from</p>';
             echo '</td>';
         echo '</tr>';
 
@@ -247,7 +247,7 @@ class GIW_Admin{
                 'teeny' => true,
                 'textarea_rows' => 4
             ));
-            echo '<p class="description">The template of the post content. Use any text, HTML, shortcode you would like to be added to all the posts when they are published. Supported placeholder <code>%%content%%</code> (The HTML of the pulled post). Use shortcode <code>[giw_edit_link]</code> to insert a link of the source Github file to edit and collaborate. You might need to "Pull all the files" to update the post if the template is changed.</p>';
+            echo '<p class="description">The template of the post content. Use any text, HTML, shortcode you would like to be added to all the posts when they are published. Supported placeholder <code>%%content%%</code> (The HTML of the pulled post). Use shortcode <code>[giw_edit_link]</code> to insert a link of the source GitHub file to edit and collaborate. You might need to "Pull all the files" to update the post if the template is changed.</p>';
             echo '</td>';
         echo '</tr>';
 
@@ -302,7 +302,7 @@ class GIW_Admin{
 
         $id = $g[ 'id' ];
 
-        echo '<h2>Pull posts from Github for [' . esc_html( $id ) . ']</h2>';
+        echo '<h2>Pull posts from GitHub for [' . esc_html( $id ) . ']</h2>';
 
         echo '<table class="widefat striped">';
         echo '<tbody>
@@ -375,7 +375,7 @@ class GIW_Admin{
         echo '<tr>';
             echo '<td style="width: 200px">Webhook secret</td>';
             echo '<td><input type="password" class="webhook_secret" name="giw_webhook_secret" value="' . esc_attr( $values[ 'webhook_secret' ] ) . '" autocomplete="new-password" /> &nbsp;<button class="button">Toggle view</button>';
-            echo '<p class="description">Go to Github repository settings --> Webhook and add a webhook for the payload URL <code>' . esc_html( rest_url( '/giw/v1/publish' ) ) . '</code> if you would like to automatically publish the changes whenever repository is updated.</p>';
+            echo '<p class="description">Go to GitHub repository settings --> Webhook and add a webhook for the payload URL <code>' . esc_html( rest_url( '/giw/v1/publish' ) ) . '</code> if you would like to automatically publish the changes whenever repository is updated.</p>';
             echo '<p class="description">Select content-type as <code>application/json</code> and enter a secret text. Provide the same secret text in the above field. Select "Just the push event" for the webhook trigger. Make sure all the repositories you would like to automatically update have the same payload URL and the secret.</p>';
             echo '</td>';
         echo '</tr>';
@@ -383,14 +383,14 @@ class GIW_Admin{
         echo '<tr><td colspan="2"><h4>Authentication</h4></td></tr>';
 
         echo '<tr>';
-            echo '<td>Github Username</td>';
+            echo '<td>GitHub Username</td>';
             echo '<td><input type="text" name="giw_github_username" value="' . esc_attr( $values[ 'github_username' ] ) . '" />';
-            echo '<p class="description">Your Github username for authenticating API calls.</p></td>';
+            echo '<p class="description">Your GitHub username for authenticating API calls.</p></td>';
         echo '</tr>';
 
         echo '<tr>';
-            echo '<td>Github Access token</td>';
-            echo '<td><input type="text" name="giw_github_access_token" value="' . esc_attr( $values[ 'github_access_token' ] ) . '" />';
+            echo '<td>GitHub Access token</td>';
+            echo '<td><input type="password" name="giw_github_access_token" value="' . esc_attr( $values[ 'github_access_token' ] ) . '" /> &nbsp;<button class="button">Toggle view</button>';
             echo '<p class="description">Create an access token by following <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-token" target="_blank">the instructions here.</a> Select <code>repo -> public_repo</code> under scopes and generate a token.
             </p></td>';
         echo '</tr>';
@@ -499,9 +499,9 @@ class GIW_Admin{
         echo '<a class="cta_link" href="https://www.aakashweb.com/docs/git-it-write/" target="_blank">See plugin documentation <span class="dashicons dashicons-arrow-right-alt"></span></a>';
         echo '</div>';
 
-        echo '<p><a href="https://github.com/vaakash/git-it-write" class="button side_btn" target="_blank"><span class="dashicons dashicons-editor-code"></span> Contribute on Github</a></p>';
+        echo '<p><a href="https://github.com/vaakash/git-it-write" class="button side_btn" target="_blank"><span class="dashicons dashicons-editor-code"></span> Contribute on GitHub</a></p>';
 
-        echo '<p><a href="https://twitter.com/intent/tweet?hashtags=wordpress,markdown,github&related=aakashweb&text=Check%20it%20out%20-%20%22Git%20it%20Write%22%20a%20new%20WordPress%20plugin%20to%20publish%20posts%20from%20Github%20using%20markdown%20files%20and%20allow%20people%20to%20collaborate%20%E2%9C%8D%20https://wordpress.org/plugins/git-it-write/" class="button side_btn" target="_blank"><span class="dashicons dashicons-share"></span> Share with friends</a></p>';
+        echo '<p><a href="https://twitter.com/intent/tweet?hashtags=wordpress,markdown,github&related=aakashweb&text=Check%20it%20out%20-%20%22Git%20it%20Write%22%20a%20new%20WordPress%20plugin%20to%20publish%20posts%20from%20GitHub%20using%20markdown%20files%20and%20allow%20people%20to%20collaborate%20%E2%9C%8D%20https://wordpress.org/plugins/git-it-write/" class="button side_btn" target="_blank"><span class="dashicons dashicons-share"></span> Share with friends</a></p>';
 
     }
 
