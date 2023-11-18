@@ -147,6 +147,16 @@ class GIW_Publisher{
             $custom_fields = $front_matter[ 'custom_fields' ];
 
             $post_date = '';
+            
+            // fix for keeping the existing post created date. existing time is updated by one hour so that the change is saved.
+			if($post_id){
+				$date_format = get_option( 'Y-m-d H:i:s' );
+				$post_date = get_the_date( $date_format, $post_id );
+				$date=date_create($post_date);
+                date_add($date,date_interval_create_from_date_string("1 hours"));
+				$post_date= date_format($date,"Y-m-d H:i:s");
+			}
+            
             if( !empty( $front_matter[ 'post_date' ] ) ){
                 $post_date = GIW_Utils::process_date( $front_matter[ 'post_date' ] );
             }
@@ -206,7 +216,9 @@ class GIW_Publisher{
             'page_template' => $page_template,
             'comment_status' => $comment_status,
             'menu_order' => $menu_order,
-            'meta_input' => $meta_input
+            'meta_input' => $meta_input,			
+			'post_modified'     => current_time( 'mysql' ),
+    	    'post_modified_gmt' => current_time( 'mysql', 1 )
         );
 
         $new_post_id = wp_insert_post( $post_details );
