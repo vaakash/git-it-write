@@ -74,16 +74,10 @@ class GIW_Repository{
         if( count( $path_split ) == 1 ){
 
             $full_file_name = $path_split[0];
-            $extension = '';
 
-            // Remove the file extension
-            $file_slug = explode( '.', $full_file_name );
-            if( count( $file_slug ) == 2 ){
-                $extension = array_pop( $file_slug );
-                $file_slug = implode( '', $file_slug );
-            }else{
-                $file_slug = $file_slug[0];
-            }
+            $file_info = pathinfo( $full_file_name );
+            $file_slug = $file_info[ 'filename' ];
+            $extension = array_key_exists( 'extension', $file_info ) ? $file_info[ 'extension' ] : '';
 
             $structure[ $file_slug ] = array(
                 'type' => 'file',

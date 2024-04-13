@@ -7,8 +7,8 @@ Donate link: https://www.paypal.me/vaakash/
 License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
-Tested up to: 6.4.1
-Stable tag: 1.8
+Tested up to: 6.5.2
+Stable tag: 1.9
 
 Publish markdown files present in a GitHub repository as posts to WordPress automatically
 
@@ -141,6 +141,9 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 
 ## Changelog
+
+### 1.9
+* Fix: Filename with multiple dots are ignored.
 
 ### 1.8
 * New: Error message during HTTP get/post is now logged.
