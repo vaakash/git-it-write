@@ -16,6 +16,7 @@ class GIW_Parsedown extends ParsedownExtra{
         'page_template' => '',
         'taxonomy' => array(),
         'custom_fields' => array(),
+        'custom_types' => array(),
         'featured_image' => '',
         'stick_post' => '',
         'skip_file' => ''
