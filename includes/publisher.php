@@ -145,6 +145,7 @@ class GIW_Publisher{
             $skip_file = empty( $front_matter[ 'skip_file' ] ) ? '' : $front_matter[ 'skip_file' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
+            $custom_types = $front_matter[ 'custom_types' ];
 
             $post_date = '';
             if( !empty( $front_matter[ 'post_date' ] ) ){
@@ -176,6 +177,7 @@ class GIW_Publisher{
             $skip_file = '';
             $taxonomy = array();
             $custom_fields = array();
+            $custom_types = array();
 
             $content = '';
             $sha = '';
@@ -188,6 +190,11 @@ class GIW_Publisher{
         }
 
         $meta_input = array_merge( $custom_fields, array(
+            'sha' => $sha,
+            'github_url' => $github_url
+        ));
+
+        $meta_input = array_merge( $custom_types, array(
             'sha' => $sha,
             'github_url' => $github_url
         ));
