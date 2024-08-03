@@ -20,11 +20,11 @@ the post type supports "hierarchy" i.e. creating posts level by level, like `/pa
 
 **File structure in the GitHub repository:**
 
-    docs\
-        guide\
+    docs/
+        guide/
             introduction.md
             getting-started.md
-    help\
+    help/
         faq.md
 
  **Generated web sides:**
@@ -69,7 +69,7 @@ the post type supports "hierarchy" i.e. creating posts level by level, like `/pa
 
 ### 🥗 Recommendation
 
-It is recommended that a permalink structure is enabled in the WordPress site so that, if you have file under `docs\reference\my-post.md` then a post is published like `https://example.com/docs/reference/my-post/`. This will be the result when post type has hierarchy support. They will be posted level by level for every folder in the repository. The folder's post will be taken from the `index.md` file if exists under that folder.
+It is recommended that a permalink structure is enabled in the WordPress site so that, if you have file under `docs/reference/my-post.md` then a post is published like `https://example.com/docs/reference/my-post/`. This will be the result when post type has hierarchy support. They will be posted level by level for every folder in the repository. The folder's post will be taken from the `index.md` file if exists under that folder.
 
 ### 🏃‍♂️ Using the plugin
 
@@ -114,4 +114,4 @@ Yes, if you want to pull posts from a branch in a repository then you can specif
 
 ### Can I pull posts from a specific folder in the repository ?
 
-Yes, if you want to pull posts from the folder in a repository then you can specify it in the plugin's repository settings page. For example, if a repository has a folder `website\main\docs` and if you want to pull only from docs folder, then you can specify `website\main\docs` in the plugin settings.
+Yes, if you want to pull posts from the folder in a repository then you can specify it in the plugin's repository settings page. For example, if a repository has a folder `website/main/docs` and if you want to pull only from docs folder, then you can specify `website/main/docs` in the plugin settings.

@@ -51,6 +51,7 @@ class GIW_Publisher{
         $this->uploaded_images = GIW_Utils::get_uploaded_images();
 
         $this->parsedown = new GIW_Parsedown();
+        $this->parsedown->setUrlsLinked(false);
         $this->parsedown->uploaded_images = $this->uploaded_images;
 
         $this->allowed_file_types = Git_It_Write::allowed_file_types();

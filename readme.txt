@@ -2,13 +2,13 @@
 Contributors: vaakash
 Author URI: https://www.aakashweb.com/
 Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
-Tags: github, markdown, editor, publish, posts, wordpress, import, custom post types
+Tags: github, markdown, editor, publish, posts
 Donate link: https://www.paypal.me/vaakash/
 License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
-Tested up to: 6.5.2
-Stable tag: 1.9
+Tested up to: 6.6.1
+Stable tag: 2.0
 
 Publish markdown files present in a GitHub repository as posts to WordPress automatically
 
@@ -77,7 +77,7 @@ Then below posts will be created like below (if permalinks are configured and th
 
 ### 🥗 Recommendation
 
-It is recommended that a permalink structure is enabled in the WordPress site so that, if you have file under `docs\reference\my-post.md` then a post is published like `https://example.com/docs/reference/my-post/`. This will be the result when post type has hierarchy support. They will be posted level by level for every folder in the repository. The folder's post will be taken from the `index.md` file if exists under that folder.
+It is recommended that a permalink structure is enabled in the WordPress site so that, if you have file under `docs/reference/my-post.md` then a post is published like `https://example.com/docs/reference/my-post/`. This will be the result when post type has hierarchy support. They will be posted level by level for every folder in the repository. The folder's post will be taken from the `index.md` file if exists under that folder.
 
 ### 🏃‍♂️ Using the plugin
 
@@ -126,7 +126,7 @@ Yes, if you want to pull posts from a branch in a repository then you can specif
 
 ### Can I pull posts from a specific folder in the repository ?
 
-Yes, if you want to pull posts from a folder in a repository then you can specify it in the plugin's repository settings page. For example, if a repository has a folder `website\main\docs` and if you want to pull only from docs folder, then you can specify `website\main\docs` in the plugin settings.
+Yes, if you want to pull posts from a folder in a repository then you can specify it in the plugin's repository settings page. For example, if a repository has a folder `website/main/docs` and if you want to pull only from docs folder, then you can specify `website/main/docs` in the plugin settings.
 
 
 ## Screenshots
@@ -141,6 +141,9 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 
 ## Changelog
+
+### 2.0
+* Fix: Disable inline URLs from being converted to link tags. (Thanks to @SienciLabs for the report)
 
 ### 1.9
 * Fix: Filename with multiple dots are ignored.
