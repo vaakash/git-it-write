@@ -100,7 +100,7 @@ class GIW_Publisher{
 
     public function create_post( $post_id, $item_slug, $item_props, $parent ){
 
-        GIW_Utils::log( sprintf( '---------- Checking post [%s] under parent [%s] ----------', $post_id, $parent ) );
+        GIW_Utils::log( sprintf( '---------- Checking post [%s] slug [%s] under parent [%s] ----------', $post_id, $item_slug, $parent ) );
 
         // If post exists, check if it has changed and proceed further
         if( $post_id && $item_props ){
@@ -124,7 +124,7 @@ class GIW_Publisher{
 
             // Some error in getting the item content
             if( !$item_content ){
-                GIW_Utils::log( 'Cannot retrieve post content, skipping this' );
+                GIW_Utils::log( 'Cannot retrieve post content for [' . $item_slug . '] URL [' . $item_props[ 'raw_url' ] . '], skipping this' );
                 $this->stats[ 'posts' ][ 'failed' ]++;
                 return false;
             }
@@ -213,7 +213,8 @@ class GIW_Publisher{
         $new_post_id = wp_insert_post( $post_details );
 
         if( is_wp_error( $new_post_id ) || empty( $new_post_id ) ){
-            GIW_Utils::log( 'Failed to publish post - ' . $new_post_id );
+            $error_msg = is_wp_error( $new_post_id ) ? $new_post_id->get_error_message() : 'empty post ID';
+            GIW_Utils::log( 'Failed to publish post [' . $item_slug . '] - ' . $error_msg );
             $this->stats[ 'posts' ][ 'failed' ]++;
             return false;
         }else{
@@ -230,7 +231,7 @@ class GIW_Publisher{
 
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
-                        GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
+                        GIW_Utils::log( 'Failed to set taxonomy [' . $tax_name . '] on post [' . $item_slug . '] - ' . $set_tax->get_error_message() );
                     }
                 }
             }
@@ -258,6 +259,8 @@ class GIW_Publisher{
         $existing_posts = $this->get_posts_by_parent( $parent );
 
         foreach( $repo_structure as $item_slug => $item_props ){
+
+            try {
 
             GIW_Utils::log( 'At repository item - ' . $item_slug);
 
@@ -298,7 +301,7 @@ class GIW_Publisher{
                     $this->create_post( $directory_post, $item_slug, $index_props, $parent );
 
                 }else{
-                    
+
                     // If index posts exists for the directory
                     if( array_key_exists( 'index', $item_props[ 'items' ] ) ){
                         $index_props = $item_props[ 'items' ][ 'index' ];
@@ -311,6 +314,12 @@ class GIW_Publisher{
 
                 $this->create_posts( $item_props[ 'items' ], $directory_post );
 
+            }
+
+            } catch( \Exception $e ){
+                GIW_Utils::log( 'Error processing item [' . $item_slug . ']: ' . $e->getMessage() );
+                $this->stats[ 'posts' ][ 'failed' ]++;
+                continue;
             }
 
         }
@@ -350,6 +359,12 @@ class GIW_Publisher{
                 continue;
             }
 
+            $allowed_image_extensions = array( 'jpg', 'jpeg', 'jpe', 'png', 'gif', 'webp' );
+            if( !in_array( strtolower( $image_props[ 'file_type' ] ), $allowed_image_extensions ) ){
+                GIW_Utils::log( 'Skipping non-image file [' . $image_slug . '] with extension [' . $image_props[ 'file_type' ] . ']' );
+                continue;
+            }
+
             $image_path = $image_props[ 'rel_url' ];
 
             GIW_Utils::log( 'Starting image ' . $image_path );
@@ -364,7 +379,8 @@ class GIW_Publisher{
             $uploaded_image_id = $this->upload_image( $image_props, 0, null, 'id' );
 
             if( is_wp_error( $uploaded_image_id ) ){
-                GIW_Utils::log( 'Failed to upload image. Error [' . $uploaded_image_id->get_error_message() . ']' );
+                GIW_Utils::log( 'Failed to upload image [' . $image_path . ']. Error [' . $uploaded_image_id->get_error_message() . ']' );
+                $this->stats[ 'images' ][ 'failed' ]++;
                 continue;
             }
 
@@ -502,6 +518,14 @@ class GIW_Publisher{
         GIW_Utils::log( 'Allowed file types - ' . implode( ', ', $this->allowed_file_types ) );
         $this->create_posts( $repo_structure, 0 );
         GIW_Utils::log( '++++++++++ Done ++++++++++' );
+
+        GIW_Utils::log( sprintf( 'SYNC SUMMARY: Posts: %d new, %d updated, %d failed | Images: %d uploaded, %d failed',
+            count( $this->stats[ 'posts' ][ 'new' ] ),
+            count( $this->stats[ 'posts' ][ 'updated' ] ),
+            $this->stats[ 'posts' ][ 'failed' ],
+            count( $this->stats[ 'images' ][ 'uploaded' ] ),
+            $this->stats[ 'images' ][ 'failed' ]
+        ));
 
         $message = 'Successfully published posts';
         $result = 1;

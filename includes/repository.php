@@ -34,6 +34,7 @@ class GIW_Repository{
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $access_token),
             ),
+            'timeout' => 30,
         ); 
 
         $response = wp_remote_get( $url, $args );

@@ -8,7 +8,7 @@ License: GPLv2 or later
 Requires PHP: 5.3
 Requires at least: 4.4
 Tested up to: 6.6.1
-Stable tag: 2.0
+Stable tag: 2.1
 
 Publish markdown files present in a GitHub repository as posts to WordPress automatically
 
@@ -141,6 +141,16 @@ Yes, if you want to pull posts from a folder in a repository then you can specif
 
 
 ## Changelog
+
+### 2.1
+* Fix: Malformed YAML no longer crashes entire sync — files are skipped with detailed error logging.
+* Fix: Non-image files (e.g. .gitkeep, .DS_Store) in _images/ no longer block image uploads.
+* Fix: Missing failed image counter before continue in upload loop.
+* New: Error recovery — try/catch in post creation loop prevents one bad file from blocking the rest.
+* New: Improved log messages with file slugs, paths, and specific WP_Error details.
+* New: Sync summary stats at end of log (posts new/updated/failed, images uploaded/failed).
+* New: 30s timeout on GitHub API requests to prevent indefinite hangs.
+* New: Standalone test suite (62 tests, no WordPress required).
 
 ### 2.0
 * Fix: Disable inline URLs from being converted to link tags. (Thanks to @SienciLabs for the report)

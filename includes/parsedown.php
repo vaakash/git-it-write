@@ -3,6 +3,7 @@
 if( ! defined( 'ABSPATH' ) ) exit;
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class GIW_Parsedown extends ParsedownExtra{
 
@@ -40,8 +41,18 @@ class GIW_Parsedown extends ParsedownExtra{
             );
         }
 
-        $front_matter = Yaml::parse( trim( $parts [1] ) );
-        $front_matter = wp_parse_args( $front_matter, $this->default_front_matter );
+        try {
+            $front_matter = Yaml::parse( trim( $parts[1] ) );
+            if( !is_array( $front_matter ) ){
+                GIW_Utils::log( 'YAML parsed to non-array, skipping file' );
+                $front_matter = array_merge( $this->default_front_matter, array( 'skip_file' => 'yes' ) );
+            } else {
+                $front_matter = wp_parse_args( $front_matter, $this->default_front_matter );
+            }
+        } catch( ParseException $e ){
+            GIW_Utils::log( 'YAML parse error: ' . $e->getMessage() . ' | Raw: ' . substr( trim( $parts[1] ), 0, 200 ) );
+            $front_matter = array_merge( $this->default_front_matter, array( 'skip_file' => 'yes' ) );
+        }
 
         $markdown = implode( PHP_EOL . '---' . PHP_EOL, array_slice( $parts, 2 ) );
 
