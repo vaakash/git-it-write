@@ -134,6 +134,7 @@ class GIW_Publisher{
             $front_matter = $parsed_content[ 'front_matter' ];
             $html = $this->parsedown->text( $parsed_content[ 'markdown' ] );
             $content = GIW_Utils::process_content_template( $this->content_template, $html );
+            # $content = wp_slash( $content ); # TODO: Check if this is needed
 
             // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
